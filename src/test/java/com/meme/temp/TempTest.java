@@ -2,12 +2,14 @@ package com.meme.temp;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
 import com.meme.util.FTPUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
@@ -324,7 +326,7 @@ class TempTest {
 
     @Test
     void hash() {
-        printHash("T00000930BR");
+        printHash("T00280083LS");
         printHash("1IB4344287");
         printHash("T00001379BR");
         printHash("T00002402BR");
@@ -352,7 +354,7 @@ class TempTest {
     @Test
     void pringSql() {
         for (int i = 0; i < 64; i++) {
-                System.out.println("select * from t_scan_store_record_info_"+i+" where CREATE_TIME>'2022-05-01' and CREATE_TIME<'2022-08-23';");
+            System.out.println("select * from t_scan_store_record_info_" + i + " where CREATE_TIME>'2022-05-01' and CREATE_TIME<'2022-08-23';");
         }
     }
 
@@ -373,6 +375,60 @@ class TempTest {
 
     }
 
+    @Test
+    void timestamp() {
+        System.out.println(System.currentTimeMillis());
+    }
+
+    @Test
+    void subString() {
+
+        String str = "111_11231443";
+        System.out.println(str.substring(str.indexOf("_") + 1));
+
+    }
+
+    @Test
+    void bigDecimal() throws JsonProcessingException {
+        String str = "[100.10, 100.200, 10.23, 1000]";
+        List<BigDecimal> bigDecimals = objectMapper.readValue(str, new TypeReference<List<BigDecimal>>() {
+        });
+        System.out.println(bigDecimals.get(0).stripTrailingZeros().equals(new BigDecimal("100.1")));
+
+        System.out.println(bigDecimals);
+    }
+
+    @Test
+    void testStringBuilder() {
+        StringBuilder sb = new StringBuilder("tail");
+        sb.insert(0, "head->");
+        System.out.println(sb);
+
+    }
+
+    @Test
+    void testBigDecimal() {
+        BigDecimal bd1 = new BigDecimal("1600.00");
+        BigDecimal bd2 = new BigDecimal("1600.0000");
+        System.out.println(bd1.stripTrailingZeros().equals(bd2.stripTrailingZeros()));
+    }
+    @Test
+    void testSubList() {
+        List<String> list = Arrays.asList("1", "2", "3");
+        System.out.println(list.subList(0, Math.min(5, list.size())));
+    }
+
+    @Test
+    void testCollectionUtil() {
+        log.info("containsInstance: {}", CollectionUtils.containsAny(Arrays.asList("aaa"), "aaa"));
+    }
+
+    @Test
+    void testSubString() {
+        String imgStr = "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/62935ff9745942aeacec1b8674bf37fb~tplv-o3syd03w52-origin-jpeg.jpeg?id=tos-maliva-i-o3syd03w52-us/62935ff9745942aeacec1b8674bf37fb";
+        String id = StringUtils.substringAfterLast(imgStr, "id=");
+        log.info("id: {}", id);
+    }
 
 }
 
