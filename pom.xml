@@ -20,6 +20,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jmh.version>1.35</jmh.version>
     </properties>
 
     <dependencies>
@@ -35,13 +36,13 @@
             <artifactId>lombok</artifactId>
 <!--            <version>1.18.22</version>-->
         </dependency>
-        <dependency>
-            <groupId>com.umeng</groupId>
-            <artifactId>open-api</artifactId>
-            <version>1.0.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/umeng-openapi/umeng.api.client.java.biz.jar</systemPath>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.umeng</groupId>-->
+<!--            <artifactId>open-api</artifactId>-->
+<!--            <version>1.0.1</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/lib/umeng-openapi/umeng.api.client.java.biz.jar</systemPath>-->
+<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/co.elastic.clients/elasticsearch-java -->
 <!--        <dependency>-->
 <!--            <groupId>co.elastic.clients</groupId>-->
@@ -138,6 +139,17 @@
             <version>3.1.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
