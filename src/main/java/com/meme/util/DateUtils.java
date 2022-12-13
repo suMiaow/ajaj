@@ -1,4 +1,4 @@
-package com.gtech.ecomm.adapter.tokopedia.util;
+package com.meme.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Slf4j
 @UtilityClass
@@ -24,8 +25,12 @@ public class DateUtils {
         }
     }
 
-    public static ZoneOffset getDefaultTimeOffset() {
+    public static ZoneOffset getDefaultZoneOffset() {
         return ZoneId.systemDefault().getRules().getOffset(Instant.now());
+    }
+
+    public static LocalDateTime getLocalDateTime(Date date) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
     }
 
 }

@@ -6,18 +6,25 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
+import com.meme.util.DateUtils;
 import com.meme.util.FTPUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.CalendarUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestExecutionListeners;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.Collator;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -26,6 +33,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 @Slf4j
 class TempTest {
@@ -410,8 +419,10 @@ class TempTest {
     void testBigDecimal() {
         BigDecimal bd1 = new BigDecimal("1600.00");
         BigDecimal bd2 = new BigDecimal("1600.0000");
+        System.out.println(bd1.compareTo(bd2));
         System.out.println(bd1.stripTrailingZeros().equals(bd2.stripTrailingZeros()));
     }
+
     @Test
     void testSubList() {
         List<String> list = Arrays.asList("1", "2", "3");
@@ -428,6 +439,130 @@ class TempTest {
         String imgStr = "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/62935ff9745942aeacec1b8674bf37fb~tplv-o3syd03w52-origin-jpeg.jpeg?id=tos-maliva-i-o3syd03w52-us/62935ff9745942aeacec1b8674bf37fb";
         String id = StringUtils.substringAfterLast(imgStr, "id=");
         log.info("id: {}", id);
+    }
+
+    @Test
+    void testInc() {
+        int a = 0;
+        for (int i = 0; i < 10; i++) {
+            a = a++;
+        }
+        System.out.println(a);
+    }
+
+    @Test
+    void testCatchException() {
+        try {
+            throw new RuntimeException("aaaa");
+        } catch (RuntimeException e) {
+            log.info("runtime");
+        } catch (Exception e) {
+            log.info("exception");
+        }
+    }
+
+    @Test
+    void testInvokeFunction() throws InterruptedException {
+        String result = invokeFunction(3, TimeUnit.SECONDS, 1, "aaaaa", "bbbb",
+                (a, b) -> {
+                    System.out.println(a);
+                    System.out.println(b);
+                    return a;
+                },
+                a -> StringUtils.equals(a, "aaaaa")
+        );
+
+        log.info("result: {}", result);
+    }
+
+    private <T, U, R> R invokeFunction(int invokeTimes, TimeUnit intervalTimeUnit, long interval, T arg1, U arg2, BiFunction<T, U, R> function, Predicate<R> predicate) {
+
+        R r = null;
+        for (int i = 0; i < invokeTimes; i++) {
+            r = function.apply(arg1, arg2);
+            if (predicate.test(r)) {
+                return r;
+            } else {
+                try {
+                    intervalTimeUnit.sleep(interval);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+        return r;
+    }
+
+    @Test
+    void testBigDecimalSerialize() throws JsonProcessingException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("price", new BigDecimal("11.11"));
+        log.info("map: {}", objectMapper.writeValueAsString(map));
+    }
+
+
+    @Test
+    void testThrow() {
+
+        exexe();
+    }
+
+    @SneakyThrows
+    private void exexe() {
+        throw new Exception("exexexexexexexex");
+    }
+
+    @Test
+    void testBase64() {
+        log.info("baseStr: {}", encodeBase64String("product11221843product11221843"));
+        log.info("baseStr: {}", encodeBase64String("newbrand-product11221843product11221843"));
+        log.info("baseStr: {}", encodeBase64String("update Description"));
+        log.info("baseStr: {}", encodeBase64String("some unique selling point"));
+
+    }
+
+    private String encodeBase64String(String str) {
+        return Base64.encodeBase64String(StringUtils.getBytes(str, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void testEpoch() {
+        log.info("epoch: {}", LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(7)));
+        log.info("currentTimeMillis: {}", System.currentTimeMillis() / 1000);
+    }
+
+    @Test
+    void getTimeZone() {
+        log.info("default timeZone: {}", TimeZone.getDefault());
+        log.info("default ZoneOffset: {}", ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now()));
+        log.info("now: {}", OffsetDateTime.now());
+        System.out.println(OffsetDateTime.now().toEpochSecond());
+    }
+
+    @Test
+    void OffsetDateTime() {
+        LocalDateTime localDateTime = DateUtils.parseLocalDateTime("20221208172556999", DateUtils.PATTERN_YYYYMMDDHHMMSSSSS);
+        System.out.println(localDateTime);
+        System.out.println(localDateTime.toEpochSecond(DateUtils.getDefaultZoneOffset()));
+    }
+
+    @Test
+    void testDate1() throws JsonProcessingException {
+        Map<String, Date> map = objectMapper.readValue("{\"date\":\"2022-12-09T16:44:56+07:00\"}", new TypeReference<Map<String, Date>>() {
+        });
+        Date date = new Date();
+        long time = date.getTime();
+        System.out.println(time);
+        System.out.println(map);
+
+        System.out.println(new Date());
+        System.out.println(DateUtils.getLocalDateTime(new Date()));
+    }
+
+    @Test
+    void testBool() {
+        System.out.println(BooleanUtils.isNotTrue(null));
     }
 
 }
