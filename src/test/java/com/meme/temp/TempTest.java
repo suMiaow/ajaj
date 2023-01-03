@@ -24,7 +24,10 @@ import org.springframework.test.context.TestExecutionListeners;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.Collator;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -563,6 +566,25 @@ class TempTest {
     @Test
     void testBool() {
         System.out.println(BooleanUtils.isNotTrue(null));
+
+    }
+
+    @Test
+    void testCreateTempPath() {
+        try {
+            Path luceneTemp = Files.createTempDirectory("lucene_temp");
+            log.info(luceneTemp.toString());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    @Test
+    void testCreatePath() throws IOException {
+
+        Path dir = Files.createDirectories(Path.of("D:\\\\temp\\lucene"));
+        log.info(dir.toString());
+        HttpURLConnection
     }
 
 }
