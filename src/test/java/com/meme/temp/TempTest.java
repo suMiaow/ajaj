@@ -584,7 +584,7 @@ class TempTest {
 
         Path dir = Files.createDirectories(Path.of("D:\\\\temp\\lucene"));
         log.info(dir.toString());
-        HttpURLConnection
+//        HttpURLConnection
     }
 
 }
