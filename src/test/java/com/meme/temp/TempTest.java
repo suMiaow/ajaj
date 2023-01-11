@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
+import com.meme.rocketmq.RocketMQUtil;
 import com.meme.util.DateUtils;
 import com.meme.util.FTPUtil;
 import lombok.SneakyThrows;
@@ -18,6 +19,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.CalendarUtils;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.common.RemotingHelper;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestExecutionListeners;
 
@@ -586,6 +595,70 @@ class TempTest {
         log.info(dir.toString());
 //        HttpURLConnection
     }
+
+    @Test
+    void testSyncProducer() throws MQBrokerException, RemotingException, InterruptedException, MQClientException {
+
+        String producerGroup = "syncProducer01111337";
+        String namesrvAddr = "127.0.0.1:9876";
+
+        DefaultMQProducer producer = RocketMQUtil.getDefaultProducer(producerGroup, namesrvAddr);
+        producer.start();
+
+        String topic = "topic_0111";
+        String tag = "sync";
+        String key = "key_01111339";
+
+        Message msg = new Message();
+        msg.setTopic(topic);
+        msg.setTags(tag);
+        msg.setKeys(key);
+        msg.setBody("bodySync01111339body".getBytes(StandardCharsets.UTF_8));
+
+        SendResult sendResult = producer.send(msg);
+
+        log.info("sendResult: {}", JSON.toJSONString(sendResult));
+
+        producer.shutdown();
+    }
+
+    @Test
+    void testAsyncProducer() throws MQClientException, RemotingException, InterruptedException {
+        String producerGroup = "asyncProducer01111501";
+        String namesrvAddr = "127.0.0.1:9876";
+
+        DefaultMQProducer producer = RocketMQUtil.getDefaultProducer(producerGroup, namesrvAddr);
+        producer.setRetryTimesWhenSendAsyncFailed(0);
+        producer.start();
+
+        String topic = "topic_0111";
+        String tag = "async";
+        String key = "key_01111502";
+
+        Message msg = new Message();
+        msg.setTopic(topic);
+        msg.setTags(tag);
+        msg.setKeys(key);
+        msg.setBody("bodyaSync0111503body".getBytes(StandardCharsets.UTF_8));
+
+        producer.send(msg, new SendCallback() {
+            @Override
+            public void onSuccess(SendResult sendResult) {
+                log.info("sendResult: {}", JSON.toJSONString(sendResult));
+            }
+
+            @Override
+            public void onException(Throwable e) {
+                log.error(e.getMessage(), e);
+            }
+        });
+
+        TimeUnit.SECONDS.sleep(30);
+        producer.shutdown();
+    }
+
+
+
 
 }
 
