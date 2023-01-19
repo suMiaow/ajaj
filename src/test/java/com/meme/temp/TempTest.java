@@ -657,6 +657,12 @@ class TempTest {
         producer.shutdown();
     }
 
+    @Test
+    void testSort() {
+        List<Integer> list = Arrays.asList(3, 2, 6, 3, 0, 1, 7, 3, null);
+        Collections.sort(list);
+        log.info("list: {}", list);
+    }
 
 
 
