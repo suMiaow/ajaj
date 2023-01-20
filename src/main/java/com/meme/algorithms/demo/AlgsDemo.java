@@ -1,8 +1,6 @@
 package com.meme.algorithms.demo;
 
 import com.meme.algorithms.utils.DrawUtils;
-import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdRandom;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -17,7 +15,7 @@ public class AlgsDemo {
             result[i] = lgCeiling(i);
         }
 
-        DrawUtils.drawArray(result, 100, 1);
+        DrawUtils.drawArray(result, 100, 4, 700, 300);
 
 
     }

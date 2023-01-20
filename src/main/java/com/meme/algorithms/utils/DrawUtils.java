@@ -9,20 +9,20 @@ import java.util.Arrays;
 public class DrawUtils {
 
 
-    public static void drawArray(int[] a, int maxX, int maxY) {
-        drawArray(Arrays.stream(a).mapToDouble(value -> value).toArray(), maxX, maxY);
+    public static void drawArray(int[] a, int maxX, int maxY, int width, int height) {
+        drawArray(Arrays.stream(a).mapToDouble(value -> value).toArray(), maxX, maxY, width, height);
     }
 
-    public static void drawArray(double[] a, int maxX, int maxY) {
-        int width = maxX > maxY ? 1000 : 1000 * maxX / maxY;
-        int height = maxY > maxX ? 1000 : 1000 * maxY / maxX;
+    public static void drawArray(double[] a, int maxX, int maxY, int width, int height) {
+        double factor = (double) maxY / maxX;
+
         StdDraw.setCanvasSize(width, height);
 
         for (int i = 0; i < a.length; i++) {
             double x = 1.0 * i / a.length;
-            double y = a[i] / height / 2.0;
+            double y = a[i] / (height * factor) / 2.0;
             double rw = 0.4 / a.length;
-            double rh = a[i] / height / 2.0;
+            double rh = a[i] / (height * factor) / 2.0;
             StdDraw.filledRectangle(x, y, rw, rh);
         }
     }

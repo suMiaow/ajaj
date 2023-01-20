@@ -1,6 +1,5 @@
 package com.meme.algs4;
 
-import com.meme.algorithms.utils.DrawUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -146,8 +145,6 @@ class AnswerTest_1_1 {
             log.info("{}", lgCeiling(i));
             result[i] = lgCeiling(i);
         }
-
-        DrawUtils.drawArray(result);
     }
 
     private int lgCeiling(int N) {
@@ -157,5 +154,55 @@ class AnswerTest_1_1 {
         }
         return result;
     }
+
+    @Test
+    void e15() {
+        int[] a = {1, 2, 1, 5, 2, 3,};
+        int[] histogram = histogram(a, 6);
+        log.info("{}", histogram);
+    }
+
+    private int[] histogram(int[] a, int M) {
+        int[] result = new int[M];
+        for (int i : a) {
+            if (i >= 0 && i < M) {
+                result[i] += 1;
+            }
+        }
+
+        return result;
+    }
+
+    @Test
+    void e16() {
+        log.info("{}", exR1(6));
+    }
+
+    public String exR1(int n) {
+        if (n <= 0) return "";
+        return exR1(n - 3) + n + exR1(n - 2) + n;
+    }
+
+    @Test
+    void e18() {
+        log.info("mstery1(2, 25) : {}", mystery1(2, 25));
+        log.info("mstery1(3, 11) : {}", mystery1(3, 11));
+        log.info("mstery2(2, 25) : {}", mystery2(2, 25));
+        log.info("mstery2(3, 11) : {}", mystery2(3, 11));
+    }
+
+    private int mystery1(int a, int b) {
+        if (b == 0) return 0;
+        if (b % 2 == 0) return mystery1(a + a, b / 2);
+        return mystery1(a + a, b / 2) + a;
+    }
+
+    private int mystery2(int a, int b) {
+        if (b == 0) return 1;
+        if (b % 2 == 0) return mystery2(a * a, b / 2);
+        return mystery2(a * a, b / 2) * a;
+    }
+
+
 
 }
