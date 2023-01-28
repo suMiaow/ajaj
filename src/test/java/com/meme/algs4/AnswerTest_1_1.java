@@ -1,5 +1,6 @@
 package com.meme.algs4;
 
+import edu.princeton.cs.algs4.StdOut;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -203,6 +204,94 @@ class AnswerTest_1_1 {
         return mystery2(a * a, b / 2) * a;
     }
 
+    @Test
+    void e19() {
+        for (int N = 0; N < 100; N++)
+            StdOut.println(N + " " + F(N));
+    }
 
+    @Test
+    void e19enhanced() {
+        for (int N = 0; N < 100; N++)
+            StdOut.println(N + " " + enhancedF(N));
+    }
+
+    private long F(int N) {
+        if (N == 0) return 0;
+        if (N == 1) return 1;
+        return F(N - 1) + F(N - 2);
+    }
+
+    private long enhancedF(int N) {
+        if (N == 0) return 0;
+        if (N == 1) return 1;
+
+        long nminus1 = 1;
+        long nminus2 = 0;
+        long temp;
+
+        for (int i = 0; i < N - 1; i++) {
+            temp = nminus2;
+            nminus2 = nminus1;
+            nminus1 = temp + nminus2;
+        }
+
+        return nminus1;
+    }
+
+    @Test
+    void e20() {
+        // TODO study Stirling's approximation
+    }
+
+    @Test
+    void e21() {
+
+        String name = "aaa";
+        int dividend = 10;
+        int divisor = 3;
+
+        printScore(name, dividend, divisor);
+    }
+
+    private void printScore(String name, int dividend, int divisor) {
+        double quotient = (double) dividend / divisor;
+        StdOut.printf("%s\t %d\t %d\t %.3f%n", name, dividend, divisor, quotient);
+    }
+
+    @Test
+    void e22() {
+        int[] a = {1, 3, 5, 6, 8, 10, 28, 39, 49, 59};
+        rank(1, a);
+    }
+
+    private int rank(int key, int[] a) {
+        return rank(key, a, 0, a.length - 1, 0);
+    }
+
+    private int rank(int key, int[] a, int lo, int hi, int depth) {
+        for (int i = 0; i < depth; i++) {
+            StdOut.print("\t");
+        }
+        StdOut.printf("lo: %d, hi: %d%n", lo, hi);
+        // Index of key in a[], if present, is not smaller than lo and not larger than hi.
+        if (lo > hi) return -1;
+        int mid = lo + (hi - lo) / 2;
+        if (key < a[mid]) return rank(key, a, lo, mid - 1, ++depth);
+        else if (key > a[mid]) return rank(key, a, mid + 1, hi, ++depth);
+        else return mid;
+    }
+
+    @Test
+    void e24() {
+        gcd(1111111, 1234567);
+    }
+
+    private int gcd(int p, int q) {
+        StdOut.printf("p: %d, q: %d%n", p, q);
+        if (q == 0) return p;
+        int r = p % q;
+        return gcd(q, r);
+    }
 
 }
