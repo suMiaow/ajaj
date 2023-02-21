@@ -293,7 +293,8 @@ class TempTest {
 
     @Test
     void random() {
-        System.out.println(RandomStringUtils.randomAlphanumeric(16));
+        System.out.println(RandomStringUtils.random(12, "~!@#$%^&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"));
+        log.info(UUID.randomUUID().toString());
     }
 
     @Test
@@ -394,6 +395,7 @@ class TempTest {
         long timestamp = LocalDateTime.parse("2022-01-01T00:00:00").toEpochSecond(ZoneOffset.ofHours(8));
         System.out.println(timestamp);
 
+        log.info("date: {}", LocalDateTime.ofInstant(Instant.ofEpochSecond(1706930114), ZoneId.systemDefault()));
     }
 
     @Test
@@ -664,6 +666,26 @@ class TempTest {
         log.info("list: {}", list);
     }
 
+    @Test
+    void testTimeUnit() {
+        log.info("unit: {}", TimeUnit.SECONDS);
+    }
+
+    @Test
+    void testString() {
+        String b = null;
+        log.info("aaa" + b);
+    }
+
+    @Test
+    void testObjectMapper() {
+        try {
+            log.info(new ObjectMapper().readValue("aaaa", new TypeReference<String>() {
+            }));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 }
