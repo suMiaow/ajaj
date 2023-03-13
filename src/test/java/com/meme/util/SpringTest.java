@@ -1,15 +1,11 @@
 package com.meme.util;
 
-import com.google.common.util.concurrent.RateLimiter;
 import com.meme.service.DemoService;
-import com.meme.temp.handler.ServiceHandler;
-import com.meme.temp.handler.model.request.DemoRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,30 +16,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @SpringBootTest
 public class SpringTest {
-
-    @Autowired
-    private RateLimiter rateLimiter;
-
-    @Test
-    void testLimiter() throws InterruptedException {
-
-        LinkedBlockingDeque<Object> queue = new LinkedBlockingDeque<>();
-
-        for (int i = 0; i < 100; i++) {
-            queue.put(i);
-        }
-
-        while (true) {
-//            rateLimiter.acquire();
-            if (rateLimiter.tryAcquire()) {
-                Object take = queue.take();
-                log.info("take: {}", take);
-            } else {
-                TimeUnit.SECONDS.sleep(1);
-            }
-        }
-
-    }
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -60,7 +32,20 @@ public class SpringTest {
 
     @Test
     void testService() {
-        log.info("v: {}", demoService.fun() );
+        log.info("v: {}", demoService.fun());
+    }
+
+    @Autowired
+    @Qualifier("slidingWindowRateLimiter")
+//    @Qualifier("fixedWindowRateLimiter")
+    private com.meme.ratelimit.RateLimiter rateLimiter;
+
+    @Test
+    void testRateLimiter() throws InterruptedException {
+        for (int i = 0; i < 100; i++) {
+            log.info("{}", rateLimiter.acquire("aaaaa", 10, 1, 10, TimeUnit.SECONDS));
+            TimeUnit.MILLISECONDS.sleep(50);
+        }
     }
 
 }

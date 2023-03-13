@@ -3,7 +3,10 @@ package com.meme.temp;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meme.demo.AttrResp;
+import com.meme.demo.ProductResp;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
 import com.meme.rocketmq.RocketMQUtil;
@@ -47,6 +50,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 class TempTest {
@@ -673,20 +677,51 @@ class TempTest {
 
     @Test
     void testString() {
-        String b = null;
-        log.info("aaa" + b);
+        String a = "aaaaaa:1111:389";
+        System.out.println(a.substring(a.lastIndexOf(":")+ 1));
     }
 
     @Test
     void testObjectMapper() {
-        try {
-            log.info(new ObjectMapper().readValue("aaaa", new TypeReference<String>() {
-            }));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "a");
+        map.put("8", "b");
+        map.put("3", "c");
+
+        System.out.println(
+                map.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())
+        );
+        ArrayList<Object> list = new ArrayList<>();
+        list.add("aaa");
+        list.add("aaa");
+        list.add("bbb");
+        long count = list.stream().distinct().count();
+        System.out.println(count);
     }
 
+
+    @Test
+    void testBeanUtils() {
+        ProductResp orig = new ProductResp();
+        orig.setChannelProductCode("aaaaaaaaaaaaaa");
+        orig.setStatus(12);
+        ArrayList<AttrResp> attrList = new ArrayList<>();
+        AttrResp attrResp = new AttrResp();
+        attrList.add(attrResp);
+        attrResp.setChannelAttrCode("xxxxxxxxxx");
+        orig.setAttrList(attrList);
+
+        ProductResp dest = new ProductResp();
+        com.meme.util.BeanUtils.copyPropertiesNonEmpty(dest, orig);
+
+        log.info("orig: {}", orig);
+        log.info("dest: {}", dest);
+    }
+
+    @Test
+    void testSerialize() throws JsonProcessingException {
+        log.info("{}", System.currentTimeMillis());
+    }
 
 }
 
