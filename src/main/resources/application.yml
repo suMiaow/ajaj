@@ -17,4 +17,7 @@ spring:
 #      host: 192.168.80.128
 #      port: 27017
 #      database: articledb
+rocketmq:
+  name-server: 127.0.0.1:9876
+
 #meme.elasticsearch.host-list: localhost

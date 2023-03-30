@@ -3,10 +3,7 @@ package com.meme.temp;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meme.demo.AttrResp;
-import com.meme.demo.ProductResp;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
 import com.meme.rocketmq.RocketMQUtil;
@@ -20,7 +17,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.CalendarUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -28,15 +24,15 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestExecutionListeners;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -180,6 +176,10 @@ class TempTest {
         log.info("dateFormat: {}", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        Date date = new Date();
+        log.info("date: {}", date);
+        log.info("date: {}", new Date(date.getTime() - 60 * 1000));
 
     }
 
@@ -341,8 +341,7 @@ class TempTest {
 
     @Test
     void testUUID() {
-        System.out.println(UUID.randomUUID());
-        System.out.println(UUID.randomUUID());
+        log.info("UUID: {}", UUID.randomUUID().toString().replace("-", ""));
     }
 
     @Test
@@ -678,7 +677,7 @@ class TempTest {
     @Test
     void testString() {
         String a = "aaaaaa:1111:389";
-        System.out.println(a.substring(a.lastIndexOf(":")+ 1));
+        System.out.println(a.substring(a.lastIndexOf(":") + 1));
     }
 
     @Test
@@ -701,27 +700,17 @@ class TempTest {
 
 
     @Test
-    void testBeanUtils() {
-        ProductResp orig = new ProductResp();
-        orig.setChannelProductCode("aaaaaaaaaaaaaa");
-        orig.setStatus(12);
-        ArrayList<AttrResp> attrList = new ArrayList<>();
-        AttrResp attrResp = new AttrResp();
-        attrList.add(attrResp);
-        attrResp.setChannelAttrCode("xxxxxxxxxx");
-        orig.setAttrList(attrList);
-
-        ProductResp dest = new ProductResp();
-        com.meme.util.BeanUtils.copyPropertiesNonEmpty(dest, orig);
-
-        log.info("orig: {}", orig);
-        log.info("dest: {}", dest);
-    }
-
-    @Test
     void testSerialize() throws JsonProcessingException {
         log.info("{}", System.currentTimeMillis());
     }
+
+    @Test
+    void testList1() {
+        int i = 0;
+        log.info("List: {}", Collections.singletonList(i++));
+        log.info("List: {}", Collections.singletonList(i++));
+    }
+
 
 }
 

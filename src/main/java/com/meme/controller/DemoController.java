@@ -24,4 +24,10 @@ public class DemoController {
         return a;
     }
 
+    @PostMapping("/path/aaa")
+        public Object pathaaa(){
+        log.info("nnnnnnn");
+        return "nnnnn";
+    }
+
 }
