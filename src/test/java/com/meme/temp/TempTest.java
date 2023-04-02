@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
+import com.meme.rocketmq.RocketMQUtil;
 import com.meme.util.DateUtils;
 import com.meme.util.FTPUtil;
 import lombok.SneakyThrows;
@@ -16,15 +17,22 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.CalendarUtils;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestExecutionListeners;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,6 +46,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 class TempTest {
@@ -168,6 +177,10 @@ class TempTest {
 
         System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName());
 
+        Date date = new Date();
+        log.info("date: {}", date);
+        log.info("date: {}", new Date(date.getTime() - 60 * 1000));
+
     }
 
     @Test
@@ -284,7 +297,8 @@ class TempTest {
 
     @Test
     void random() {
-        System.out.println(RandomStringUtils.randomAlphanumeric(16));
+        System.out.println(RandomStringUtils.random(12, "~!@#$%^&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"));
+        log.info(UUID.randomUUID().toString());
     }
 
     @Test
@@ -327,8 +341,7 @@ class TempTest {
 
     @Test
     void testUUID() {
-        System.out.println(UUID.randomUUID());
-        System.out.println(UUID.randomUUID());
+        log.info("UUID: {}", UUID.randomUUID().toString().replace("-", ""));
     }
 
     @Test
@@ -385,6 +398,7 @@ class TempTest {
         long timestamp = LocalDateTime.parse("2022-01-01T00:00:00").toEpochSecond(ZoneOffset.ofHours(8));
         System.out.println(timestamp);
 
+        log.info("date: {}", LocalDateTime.ofInstant(Instant.ofEpochSecond(1706930114), ZoneId.systemDefault()));
     }
 
     @Test
@@ -584,8 +598,119 @@ class TempTest {
 
         Path dir = Files.createDirectories(Path.of("D:\\\\temp\\lucene"));
         log.info(dir.toString());
-        HttpURLConnection
+//        HttpURLConnection
     }
+
+    @Test
+    void testSyncProducer() throws MQBrokerException, RemotingException, InterruptedException, MQClientException {
+
+        String producerGroup = "syncProducer01111337";
+        String namesrvAddr = "127.0.0.1:9876";
+
+        DefaultMQProducer producer = RocketMQUtil.getDefaultProducer(producerGroup, namesrvAddr);
+        producer.start();
+
+        String topic = "topic_0111";
+        String tag = "sync";
+        String key = "key_01111339";
+
+        Message msg = new Message();
+        msg.setTopic(topic);
+        msg.setTags(tag);
+        msg.setKeys(key);
+        msg.setBody("bodySync01111339body".getBytes(StandardCharsets.UTF_8));
+
+        SendResult sendResult = producer.send(msg);
+
+        log.info("sendResult: {}", JSON.toJSONString(sendResult));
+
+        producer.shutdown();
+    }
+
+    @Test
+    void testAsyncProducer() throws MQClientException, RemotingException, InterruptedException {
+        String producerGroup = "asyncProducer01111501";
+        String namesrvAddr = "127.0.0.1:9876";
+
+        DefaultMQProducer producer = RocketMQUtil.getDefaultProducer(producerGroup, namesrvAddr);
+        producer.setRetryTimesWhenSendAsyncFailed(0);
+        producer.start();
+
+        String topic = "topic_0111";
+        String tag = "async";
+        String key = "key_01111502";
+
+        Message msg = new Message();
+        msg.setTopic(topic);
+        msg.setTags(tag);
+        msg.setKeys(key);
+        msg.setBody("bodyaSync0111503body".getBytes(StandardCharsets.UTF_8));
+
+        producer.send(msg, new SendCallback() {
+            @Override
+            public void onSuccess(SendResult sendResult) {
+                log.info("sendResult: {}", JSON.toJSONString(sendResult));
+            }
+
+            @Override
+            public void onException(Throwable e) {
+                log.error(e.getMessage(), e);
+            }
+        });
+
+        TimeUnit.SECONDS.sleep(30);
+        producer.shutdown();
+    }
+
+    @Test
+    void testSort() {
+        List<Integer> list = Arrays.asList(3, 2, 6, 3, 0, 1, 7, 3, null);
+        Collections.sort(list);
+        log.info("list: {}", list);
+    }
+
+    @Test
+    void testTimeUnit() {
+        log.info("unit: {}", TimeUnit.SECONDS);
+    }
+
+    @Test
+    void testString() {
+        String a = "aaaaaa:1111:389";
+        System.out.println(a.substring(a.lastIndexOf(":") + 1));
+    }
+
+    @Test
+    void testObjectMapper() {
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "a");
+        map.put("8", "b");
+        map.put("3", "c");
+
+        System.out.println(
+                map.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())
+        );
+        ArrayList<Object> list = new ArrayList<>();
+        list.add("aaa");
+        list.add("aaa");
+        list.add("bbb");
+        long count = list.stream().distinct().count();
+        System.out.println(count);
+    }
+
+
+    @Test
+    void testSerialize() throws JsonProcessingException {
+        log.info("{}", System.currentTimeMillis());
+    }
+
+    @Test
+    void testList1() {
+        int i = 0;
+        log.info("List: {}", Collections.singletonList(i++));
+        log.info("List: {}", Collections.singletonList(i++));
+    }
+
 
 }
 
