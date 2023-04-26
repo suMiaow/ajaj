@@ -26,6 +26,9 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,6 +47,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -208,9 +213,17 @@ class TempTest {
 
     @Test
     void testDate2() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.SIMPLIFIED_CHINESE);
-        LocalDateTime dateTime = LocalDateTime.parse("2022-07-07T14:35:16.771+08:00", dateTimeFormatter);
-        log.info("dateTime: {}", dateTime);
+//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.SIMPLIFIED_CHINESE);
+//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//        LocalDateTime dateTime = LocalDateTime.parse("2022-07-07T14:35:16.771+08:00", dateTimeFormatter);
+//        log.info("dateTime: {}", dateTime);
+        log.info("{}", OffsetDateTime.parse("2023-04-23T08:01:15.011Z", dateTimeFormatter));
+
+
+//        Date date = new Date();
+//        System.out.println(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
 
     }
 
@@ -219,7 +232,13 @@ class TempTest {
         System.out.println(
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmssSSS", Locale.SIMPLIFIED_CHINESE))
         );
-        System.out.println("210616110550592");
+    }
+
+    @Test
+    void testDate4() {
+        LocalDateTime time = LocalDateTime.parse("20240117000000", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        log.info("locale: {}", Locale.getDefault());
+        log.info("{}", time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
     }
 
     @Test
@@ -678,6 +697,7 @@ class TempTest {
     void testString() {
         String a = "aaaaaa:1111:389";
         System.out.println(a.substring(a.lastIndexOf(":") + 1));
+        log.info("equals: {}", StringUtils.equals(null, null));
     }
 
     @Test
@@ -709,6 +729,38 @@ class TempTest {
         int i = 0;
         log.info("List: {}", Collections.singletonList(i++));
         log.info("List: {}", Collections.singletonList(i++));
+    }
+
+    @Test
+    void testURI() {
+        URI uri = URI.create("https://www.baidu.com");
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString("https://www.baidu.com?b=2").queryParam("a", List.of(1, 2, 3)).build();
+        log.info("{}", uriComponents);
+//        HttpClientErrorException
+    }
+
+
+    @Test
+    void testJson() throws JsonProcessingException {
+        String jsonStr = "{\n" +
+                "    \"421\": \"string value\",\n" +
+                "    \"533\": [\n" +
+                "      4,\n" +
+                "      5\n" +
+                "    ],\n" +
+                "    \"567\": 123,\n" +
+                "    \"721\": [\n" +
+                "      \"string1\",\n" +
+                "      \"string2\"\n" +
+                "    ],\n" +
+                "    \"854\": null\n" +
+                "  }";
+
+        Map<String, Object> map = objectMapper.readValue(jsonStr, new TypeReference<>() {
+        });
+        log.info("map: {}", map);
+
+        log.info("{}", LocalDateTime.now());
     }
 
 

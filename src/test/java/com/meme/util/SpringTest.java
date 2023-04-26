@@ -43,10 +43,10 @@ public class SpringTest {
     @Test
     void testRateLimiter() throws InterruptedException {
         log.info(rateLimiter.getClass().getSimpleName());
-//        for (int i = 0; i < 100; i++) {
-//            log.info("{}", rateLimiter.acquire("aaaaa", 10, 1, 10, TimeUnit.SECONDS));
-//            TimeUnit.MILLISECONDS.sleep(50);
-//        }
+        for (int i = 0; i < 100; i++) {
+            log.info("{}", rateLimiter.acquire("aaaaa", 10, 1, 10, TimeUnit.SECONDS));
+            TimeUnit.MILLISECONDS.sleep(50);
+        }
     }
 
 }

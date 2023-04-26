@@ -35,8 +35,7 @@ public class FixedWindowRateLimiter extends AbstractRateLimiter {
                 "    return false; " +
                 "end ";
         RedisScript<Boolean> slidingWindowScript = new DefaultRedisScript<>(script, Boolean.class);
-        Boolean acquired = stringRedisTemplate.execute(slidingWindowScript, Collections.singletonList(key), String.valueOf(maxRequests), String.valueOf(windowSec));
+        Boolean acquired = stringRedisTemplate.execute(slidingWindowScript, Collections.singletonList("adapter:rate_limit:" + key), String.valueOf(maxRequests), String.valueOf(windowSec));
         return BooleanUtils.isTrue(acquired);
-
     }
 }

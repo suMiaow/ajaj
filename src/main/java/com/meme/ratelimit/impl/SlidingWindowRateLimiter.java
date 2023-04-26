@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
 @Component
 @Slf4j
@@ -34,8 +35,12 @@ public class SlidingWindowRateLimiter extends AbstractRateLimiter {
                 "end; " +
                 "return false; ";
         RedisScript<Boolean> slidingWindowScript = new DefaultRedisScript<>(script, Boolean.class);
-        Boolean acquired = stringRedisTemplate.execute(slidingWindowScript, Collections.singletonList(key), String.valueOf(maxRequests), String.valueOf(windowSec));
+        Boolean acquired = stringRedisTemplate.execute(slidingWindowScript, Collections.singletonList("adapter:rate_limit:" + key), String.valueOf(maxRequests), String.valueOf(windowSec));
         return BooleanUtils.isTrue(acquired);
+    }
+
+    abstract static class Sync extends AbstractQueuedSynchronizer {
+
     }
 
 }

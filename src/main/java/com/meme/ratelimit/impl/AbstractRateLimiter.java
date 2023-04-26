@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class AbstractRateLimiter implements RateLimiter {
+public abstract class AbstractRateLimiter implements RateLimiter {
     @Override
-    public boolean acquire(String key, int maxRequests, long windowSec, long timout, TimeUnit timoutUnit) {
+    public boolean acquire(String key, int maxRequests, long windowSec, long timeout, TimeUnit timeoutUnit) {
         boolean acquired = false;
         long beginTimeMillis = System.currentTimeMillis();
-        long timeoutMillis = timoutUnit.toMillis(timout);
+        long timeoutMillis = timeoutUnit.toMillis(timeout);
         try {
             do {
                 acquired = acquire(key, maxRequests, windowSec);
