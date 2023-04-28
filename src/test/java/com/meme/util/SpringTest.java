@@ -1,5 +1,6 @@
 package com.meme.util;
 
+import com.meme.event.CustomSpringEventPublisher;
 import com.meme.service.DemoService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,15 @@ public class SpringTest {
             log.info("{}", rateLimiter.acquire("aaaaa", 10, 1, 10, TimeUnit.SECONDS));
             TimeUnit.MILLISECONDS.sleep(50);
         }
+    }
+
+    @Autowired
+    private CustomSpringEventPublisher publisher;
+
+    @Test
+    void testEvent() {
+        publisher.publishCustomEvent();
+
     }
 
 }

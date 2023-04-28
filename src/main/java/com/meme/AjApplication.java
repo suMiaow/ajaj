@@ -2,6 +2,7 @@ package com.meme;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 
@@ -20,6 +21,7 @@ public class AjApplication {
 
         Resource[] resources = context.getResources("classpath:application.yml");
         Resource[] springFactories = context.getResources("classpath*:META-INF/spring.factories");
+        log.info(context.getEnvironment().getProperty("java_home"));
 
         log.info("{}", springFactories);
 
