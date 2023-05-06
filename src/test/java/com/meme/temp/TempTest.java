@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
+import com.meme.retry.model.RetryInfo;
+import com.meme.retry.model.RetryStatus;
 import com.meme.rocketmq.RocketMQUtil;
 import com.meme.util.DateUtils;
 import com.meme.util.FTPUtil;
@@ -26,7 +28,6 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -47,7 +48,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -215,10 +215,11 @@ class TempTest {
     void testDate2() {
 //        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.SIMPLIFIED_CHINESE);
 //        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 //        LocalDateTime dateTime = LocalDateTime.parse("2022-07-07T14:35:16.771+08:00", dateTimeFormatter);
 //        log.info("dateTime: {}", dateTime);
-        log.info("{}", OffsetDateTime.parse("2023-04-23T08:01:15.011Z", dateTimeFormatter));
+        log.info("{}", OffsetDateTime.parse("2024-01-18T07:59:59+08:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        log.info("{}", DateUtils.formatOffset("2024-01-18T07:59:59+08:00", DateUtils.PATTERN_28));
 
 
 //        Date date = new Date();
@@ -763,6 +764,33 @@ class TempTest {
         log.info("{}", LocalDateTime.now());
     }
 
+    @Test
+    void testRetryInfo() {
+        RetryInfo retryInfo = new RetryInfo().toBuilder()
+                .stepList(List.of(1L, 2L, 4L, 8L, 16L, 30L, 60L))
+                .timeoutSpan(5L)
+                .timeoutSpanUnit(TimeUnit.MINUTES)
+                .build();
+
+        retryInfo.getNextRetryTimeMillis();
+
+        try {
+            do {
+                if (retryInfo.needRetryNow()) {
+                    log.info("retry.");
+                    retryInfo.setRetryCount(retryInfo.getRetryCount() + 1);
+                } else if (retryInfo.needFinalizeNow()) {
+                    log.info("finalize.");
+                    retryInfo.setRetryStatus(RetryStatus.FINALIZED);
+                }
+                TimeUnit.SECONDS.sleep(1L);
+
+            } while (!retryInfo.isAllFinished());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+    }
 
 }
 

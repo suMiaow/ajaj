@@ -1,6 +1,8 @@
 package com.meme.util;
 
 import com.meme.event.CustomSpringEventPublisher;
+import com.meme.retry.model.RetryInfo;
+import com.meme.retry.service.RetryService;
 import com.meme.service.DemoService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +59,35 @@ public class SpringTest {
     @Test
     void testEvent() {
         publisher.publishCustomEvent();
+
+    }
+
+    @Autowired
+    private RetryService retryService;
+
+    @Test
+    void testRetry() throws InterruptedException {
+
+        RetryInfo retryInfo1 = new RetryInfo().toBuilder()
+                .stepList(List.of(1L, 2L, 4L, 8L, 16L, 30L, 60L))
+                .timeoutSpan(5L)
+                .timeoutSpanUnit(TimeUnit.MINUTES)
+                .build();
+
+        RetryInfo retryInfo2 = new RetryInfo().toBuilder()
+                .stepList(List.of(1L, 2L, 4L, 8L, 16L, 30L, 60L))
+                .timeoutSpan(5L)
+                .timeoutSpanUnit(TimeUnit.MINUTES)
+                .build();
+
+        retryService.save(retryInfo1);
+
+        while (true) {
+
+            retryService.retry();
+
+            TimeUnit.SECONDS.sleep(2L);
+        }
 
     }
 
