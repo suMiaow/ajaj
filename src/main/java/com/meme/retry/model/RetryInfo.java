@@ -61,7 +61,7 @@ public class RetryInfo {
      * 重试步长间隔
      */
     @NonNull
-    private List<Long> stepList = Arrays.asList(10L, 20L, 30L, 60L, 120L, 300L);
+    private List<Long> stepList = Arrays.asList(5L, 10L, 20L, 30L, 60L, 90L, 120L, 300L, 600L, 1800L);
 
     /**
      * 重试步长间隔单位
@@ -80,13 +80,13 @@ public class RetryInfo {
     private RetryStatus retryStatus = RetryStatus.FAIL;
 
     @JsonIgnore
-    public long getTimeoutMillis() {
+    public long getTimeoutSpanMillis() {
         return this.timeoutSpanUnit.toMillis(this.timeoutSpan);
     }
 
     @JsonIgnore
-    public long getRetryEndTimeMillis() {
-        return this.startTimeMillis + getTimeoutMillis();
+    public long getTimeoutTimeMillis() {
+        return this.startTimeMillis + getTimeoutSpanMillis();
     }
 
     @JsonIgnore
@@ -106,13 +106,13 @@ public class RetryInfo {
     }
 
     @JsonIgnore
-    public boolean isTimeout() {
-        return System.currentTimeMillis() > getRetryEndTimeMillis();
+    private boolean isTimeout() {
+        return System.currentTimeMillis() > getTimeoutTimeMillis();
     }
 
     @JsonIgnore
-    public boolean isAllFinished() {
-        return RetryStatus.SUCCESS.equals(retryStatus) || RetryStatus.FINALIZED.equals(retryStatus);
+    public boolean isSuccess() {
+        return RetryStatus.SUCCESS.equals(this.retryStatus);
     }
 
     public boolean needRetryNow() {
@@ -122,15 +122,21 @@ public class RetryInfo {
 
     public boolean needFinalizeNow() {
 
-        return System.currentTimeMillis() < (getRetryEndTimeMillis() + getTimeoutMillis())
-                && isTimeout() && RetryStatus.FAIL.equals(retryStatus);
+        return isTimeout()
+                && System.currentTimeMillis() < (getTimeoutTimeMillis() + getTimeoutSpanMillis())
+                && RetryStatus.FAIL.equals(retryStatus);
     }
 
     @JsonIgnore
     public boolean isDead() {
 
-        return System.currentTimeMillis() > (getRetryEndTimeMillis() + getTimeoutMillis())
+        return System.currentTimeMillis() > (getTimeoutTimeMillis() + getTimeoutSpanMillis())
                 && RetryStatus.FAIL.equals(retryStatus);
+    }
+
+    @JsonIgnore
+    public boolean isFinalized() {
+        return RetryStatus.FINALIZED.equals(this.retryStatus);
     }
 
     public void fail() {
@@ -143,13 +149,32 @@ public class RetryInfo {
         this.retryStatus = RetryStatus.SUCCESS;
     }
 
-    @JsonIgnore
-    public void isFinalized() {
+    public void finalized() {
         this.retryStatus = RetryStatus.FINALIZED;
     }
 
-    public void incrRetryCount() {
-        this.retryCount += 1;
+    @Getter
+    @RequiredArgsConstructor
+    public enum RetryStatus {
+
+        /**
+         * 失败
+         */
+        FAIL("0"),
+
+        /**
+         * 成功
+         */
+        SUCCESS("1"),
+
+        /**
+         * 结束
+         */
+        FINALIZED("3"),
+        ;
+
+        private final String code;
+
     }
 
 }

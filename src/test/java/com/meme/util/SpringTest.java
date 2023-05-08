@@ -80,7 +80,7 @@ public class SpringTest {
                 .timeoutSpanUnit(TimeUnit.MINUTES)
                 .build();
 
-        retryService.save(retryInfo1);
+        retryService.saveRetry(retryInfo1);
 
         while (true) {
 

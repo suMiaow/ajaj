@@ -58,7 +58,7 @@ public class RetryDaoImpl implements RetryDao {
 
     @SneakyThrows
     @Override
-    public List<RetryInfo> peek() {
+    public List<RetryInfo> peekNeedRetryNow() {
         List<RetryInfo> retryInfoList = new ArrayList<>();
 
         String retryQueueKey = getRetryQueueKey();
