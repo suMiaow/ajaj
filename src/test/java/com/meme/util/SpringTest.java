@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -30,6 +31,7 @@ public class SpringTest {
         log.info("System.currentTimeMillis: {}", System.currentTimeMillis());
         log.info("redisTime:                {}", redisTime);
     }
+
 
     @Autowired
     private DemoService demoService;

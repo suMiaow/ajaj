@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meme.mongo.entity.B2bActivityOrg;
 import com.meme.mongo.entity.Noob;
 import com.meme.retry.model.RetryInfo;
-import com.meme.retry.model.RetryStatus;
 import com.meme.rocketmq.RocketMQUtil;
 import com.meme.util.DateUtils;
 import com.meme.util.FTPUtil;
+import com.rabbitmq.client.ConnectionFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 class TempTest {
@@ -78,12 +79,13 @@ class TempTest {
     }
 
     @Test
-    void testException() throws JsonProcessingException {
+    void testException() throws Exception {
         try {
             throw new Exception("new thrown exception");
 
         } catch (Exception e) {
-            log.error("{}", new ObjectMapper().writeValueAsString(e));
+//            log.error("{}", new ObjectMapper().writeValueAsString(e));
+            throw new Exception(e);
         }
     }
 
@@ -111,7 +113,8 @@ class TempTest {
 
     @Test
     void testOptional() {
-        Object o = Optional.ofNullable(null).orElse(1);
+        Integer i = null;
+        Integer o = Optional.ofNullable(i).orElse(1);
         System.out.println(o);
     }
 
@@ -778,18 +781,32 @@ class TempTest {
             do {
                 if (retryInfo.needRetryNow()) {
                     log.info("retry.");
-                    retryInfo.setRetryCount(retryInfo.getRetryCount() + 1);
+                    retryInfo.fail();
                 } else if (retryInfo.needFinalizeNow()) {
                     log.info("finalize.");
-                    retryInfo.setRetryStatus(RetryStatus.FINALIZED);
+                    retryInfo.finalized();
                 }
                 TimeUnit.SECONDS.sleep(1L);
 
-            } while (!retryInfo.isAllFinished());
+            } while (!retryInfo.isFinalized());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void testList2() {
+        log.info("count: {}", Stream.of(1, 1, 2, 3).distinct().count());
+    }
+
+
+    @Test
+    void rabbitmqSend() {
+        String QUEUE_NAME = "hello";
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("localhost");
+        try (connectionFactory.newConnection())
     }
 
 }
