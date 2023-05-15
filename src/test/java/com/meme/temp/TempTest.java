@@ -803,10 +803,10 @@ class TempTest {
 
     @Test
     void rabbitmqSend() {
-        String QUEUE_NAME = "hello";
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        try (connectionFactory.newConnection())
+//        String QUEUE_NAME = "hello";
+//        ConnectionFactory connectionFactory = new ConnectionFactory();
+//        connectionFactory.setHost("localhost");
+//        try (connectionFactory.newConnection())
     }
 
 }

@@ -12,10 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -91,6 +92,25 @@ public class SpringTest {
             TimeUnit.SECONDS.sleep(2L);
         }
 
+    }
+
+    @Test
+    void testLeftPushScript() {
+        String scriptStr = AjAjTestUtils.readFile("lua/left_push.lua");
+
+        RedisScript<Object> redisScript = new DefaultRedisScript<>(scriptStr);
+        stringRedisTemplate.execute(redisScript, Arrays.asList("test:ids", "test:queue"), "2");
+    }
+
+    @Test
+    void testRightPopScript() {
+
+        String scriptStr = AjAjTestUtils.readFile("lua/right_pop.lua");
+
+        RedisScript<String> redisScript = new DefaultRedisScript<>(scriptStr, String.class);
+        String result = stringRedisTemplate.execute(redisScript, Arrays.asList("test:queue", "test:detail:"));
+//
+        log.info("result: {}", result);
     }
 
 }
