@@ -9,11 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest
-public class SpringTest {
+class SpringTest {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -111,6 +115,31 @@ public class SpringTest {
         String result = stringRedisTemplate.execute(redisScript, Arrays.asList("test:queue", "test:detail:"));
 //
         log.info("result: {}", result);
+    }
+
+    @Autowired
+    RedisConnectionFactory redisConnectionFactory;
+
+    @Test
+    void testLazada() {
+
+        String fileName = "misc/lazada-brand.json";
+
+        RedisTemplate redisTemplate = new RedisTemplate();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        RedisSerializer<String> stringSerializer = new StringRedisSerializer();
+        redisTemplate.setKeySerializer(stringSerializer);
+        redisTemplate.setHashKeySerializer(stringSerializer);
+        redisTemplate.afterPropertiesSet();
+
+        String key = "channel-lazada:brandcache:data:id";
+
+//        String value = (String) redisTemplate.opsForValue().get(key);
+//        AjAjTestUtils.writeFile(fileName, value);
+
+        String brandStr = AjAjTestUtils.readFile(fileName);
+        redisTemplate.opsForValue().set(key, brandStr);
+
     }
 
 }

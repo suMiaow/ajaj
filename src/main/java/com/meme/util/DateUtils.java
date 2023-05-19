@@ -13,6 +13,10 @@ import java.util.Date;
 public class DateUtils {
 
     public static final String PATTERN_YYYYMMDDHHMMSSSSS = "yyyyMMddHHmmssSSS";
+    public static final String PATTERN_28 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String PATTERN_10 = "yyyy-MM-dd";
+    public static final String PATTERN_14 = "yyyyMMddHHmmss";
+    public static final String PATTERN_19 = "yyyy-MM-dd HH:mm:ss";
 
 
     public static ZoneOffset getDefaultZoneOffset() {
@@ -22,13 +26,16 @@ public class DateUtils {
     public static LocalDateTime getLocalDateTime(Date date) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
     }
-    public static final String PATTERN_28 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static final String PATTERN_10 = "yyyy-MM-dd";
-    public static final String PATTERN_14 = "yyyyMMddHHmmss";
-    public static final String PATTERN_19 = "yyyy-MM-dd HH:mm:ss";
-
 
     public static String format(LocalDateTime date, String pattern) {
+        if (date == null) {
+            return null;
+        }
+
+        return date.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public static String format(ZonedDateTime date, String pattern) {
         if (date == null) {
             return null;
         }

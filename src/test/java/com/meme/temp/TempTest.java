@@ -189,6 +189,11 @@ class TempTest {
         log.info("date: {}", date);
         log.info("date: {}", new Date(date.getTime() - 60 * 1000));
 
+        log.info("local: {}", ZonedDateTime.now());
+        log.info("local: {}", DateUtils.format(ZonedDateTime.now(), DateUtils.PATTERN_28));
+        log.info("utc: {}", ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")));
+        log.info("utc: {}", DateUtils.format(ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")), DateUtils.PATTERN_28));
+
     }
 
     @Test

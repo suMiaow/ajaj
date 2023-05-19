@@ -8,6 +8,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 @UtilityClass
 public class AjAjTestUtils {
@@ -19,4 +20,12 @@ public class AjAjTestUtils {
         byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
         return new String(bytes, StandardCharsets.UTF_8);
     }
+
+    @SneakyThrows
+    public static void writeFile(String path, String content) {
+
+        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + path);
+        Files.write(Paths.get(file.getAbsolutePath()), List.of(content), StandardCharsets.UTF_8);
+    }
+
 }
