@@ -7,10 +7,15 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.ResourceUtils;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 @Slf4j
@@ -40,6 +45,11 @@ public class BeanFactoryDemo {
         }
 
         log.info("bean1.bean2: {}", ((Bean1) beanFactory.getBean("bean1")).bean2);
+
+        DefaultListableBeanFactory beanFactory1 = new DefaultListableBeanFactory();
+        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory1);
+        xmlBeanDefinitionReader.loadBeanDefinitions(new ClassPathResource("bean_def.xml"));
+
     }
 
     @Configuration
