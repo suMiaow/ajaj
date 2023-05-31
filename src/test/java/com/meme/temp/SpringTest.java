@@ -1,9 +1,12 @@
-package com.meme.util;
+package com.meme.temp;
 
+import com.meme.beans.service.DemoService;
+import com.meme.beans.service.impl.AaaDemoService;
 import com.meme.event.CustomSpringEventPublisher;
 import com.meme.retry.model.RetryInfo;
 import com.meme.retry.service.RetryService;
-import com.meme.service.DemoService;
+import com.meme.util.AjAjTestUtils;
+import com.meme.util.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +40,6 @@ class SpringTest {
         log.info("redisTime:                {}", redisTime);
     }
 
-
-    @Autowired
-    private DemoService demoService;
-
-    @Test
-    void testService() {
-        log.info("v: {}", demoService.fun());
-    }
 
     @Autowired
     @Qualifier("slidingWindowRateLimiter")
@@ -141,5 +136,28 @@ class SpringTest {
         redisTemplate.opsForValue().set(key, brandStr);
 
     }
+
+//    @Autowired
+//    DemoService demoService;
+
+    @Autowired(required = false)
+    @Qualifier("bbbDemoService")
+    DemoService bbbDemoService;
+    @Autowired(required = false)
+    @Qualifier("cccDemoService")
+    DemoService cccDemoService;
+
+    @Test
+    void testBean() {
+
+//        demoService.fun();
+//        bbbDemoService.fun();
+//        cccDemoService.fun();
+        DemoService bean = (DemoService) SpringUtil.getBean(AaaDemoService.class);
+
+        bean.fun();
+
+    }
+
 
 }

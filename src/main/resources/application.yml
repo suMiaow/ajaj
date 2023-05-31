@@ -34,3 +34,4 @@ server:
   servlet:
     context-path: /resource-server
 
+demo.client.bean:

@@ -5,7 +5,6 @@ import com.meme.temp.handler.model.request.DemoRequest;
 import com.meme.temp.handler.model.response.DemoResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,8 @@ public class SpringUtil implements ApplicationContextAware {
         return getApplicationContext().getBean(clazz);
     }
 
-    public static <T> Map<String, T> getBeans(Class<T> clazz) {
+
+    public static <T> Map<String, T> getBeansOfType(Class<T> clazz) {
         return getApplicationContext().getBeansOfType(clazz);
     }
 
