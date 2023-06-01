@@ -46,10 +46,10 @@ public class BeanFactoryDemo {
 
         log.info("bean1.bean2: {}", ((Bean1) beanFactory.getBean("bean1")).bean2);
 
-        DefaultListableBeanFactory beanFactory1 = new DefaultListableBeanFactory();
-        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory1);
-        xmlBeanDefinitionReader.loadBeanDefinitions(new ClassPathResource("bean_def.xml"));
-
+//        DefaultListableBeanFactory beanFactory1 = new DefaultListableBeanFactory();
+//        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory1);
+//        xmlBeanDefinitionReader.loadBeanDefinitions(new ClassPathResource("bean_def.xml"));
+//
     }
 
     @Configuration
