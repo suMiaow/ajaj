@@ -6,10 +6,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class Bean3 {
 
-    @Autowired
-    private Bean4 bean4;
+//    @Autowired
+//    private Bean4 bean4;
 
     public String fun() {
-        return bean4.fun();
+//        return bean4.fun();
+        return null;
     }
 }
