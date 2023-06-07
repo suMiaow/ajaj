@@ -1,4 +1,4 @@
-package com.meme.demo.enums;
+package com.memem.demo.enums;
 
 public enum SingletonEnum {
     INSTANCE,

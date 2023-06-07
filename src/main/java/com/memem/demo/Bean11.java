@@ -1,4 +1,4 @@
-package com.meme.demo;
+package com.memem.demo;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

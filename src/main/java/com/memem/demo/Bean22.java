@@ -1,4 +1,4 @@
-package com.meme.demo;
+package com.memem.demo;
 
 public class Bean22 {
 }

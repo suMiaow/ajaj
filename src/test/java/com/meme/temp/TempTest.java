@@ -217,6 +217,7 @@ class TempTest {
         String str = "{\"name\":\"aaa\"}";
         Noob noob = JSON.parseObject(str, Noob.class);
         log.info(noob.toString());
+        log.info(JSON.toJSONString("aaaaaaaaaa"));
     }
 
     @Test

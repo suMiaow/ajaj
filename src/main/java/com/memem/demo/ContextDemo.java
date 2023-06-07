@@ -1,4 +1,4 @@
-package com.meme.demo;
+package com.memem.demo;
 
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;

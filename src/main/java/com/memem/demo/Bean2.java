@@ -1,16 +1,15 @@
-package com.meme.demo;
+package com.memem.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Bean3 {
+public class Bean2 {
 
-//    @Autowired
-//    private Bean4 bean4;
+    @Autowired
+    private Bean3 bean3;
 
     public String fun() {
-//        return bean4.fun();
-        return null;
+        return bean3.fun();
     }
 }

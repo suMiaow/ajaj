@@ -1,21 +1,19 @@
-package com.meme.demo;
+package com.memem.demo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.ResourceUtils;
 
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Map;
 
 @Slf4j
@@ -40,16 +38,17 @@ public class BeanFactoryDemo {
 
         String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
 
-        for (String beanDefinitionName : beanDefinitionNames) {
-            log.info(beanDefinitionName);
-        }
+//        for (String beanDefinitionName : beanDefinitionNames) {
+//            log.info(beanDefinitionName);
+//        }
 
-        log.info("bean1.bean2: {}", ((Bean1) beanFactory.getBean("bean1")).bean2);
+//        log.info("bean1.bean2: {}", ((Bean1) beanFactory.getBean("bean1")).bean2);
 
 //        DefaultListableBeanFactory beanFactory1 = new DefaultListableBeanFactory();
 //        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory1);
 //        xmlBeanDefinitionReader.loadBeanDefinitions(new ClassPathResource("bean_def.xml"));
 //
+        beanFactory.destroySingletons();
     }
 
     @Configuration
@@ -60,6 +59,11 @@ public class BeanFactoryDemo {
         }
 
         @Bean
+        public BeanPostProcessorDemo beanPostProcessorDemo() {
+            return new BeanPostProcessorDemo();
+        }
+
+//        @Bean
         public Bean2 bean2() {
             return new Bean2();
         }
@@ -69,12 +73,25 @@ public class BeanFactoryDemo {
     public static class Bean1 {
 
         public Bean1() {
-            log.info("construct bean1");
+
+            log.info(">>>>>>>>>>>>>>>>>> constructor");
+        }
+
+        @PostConstruct
+        public void postConstruct() {
+            log.info(">>>>>>>>>>>>>>>>>> postConstruct");
         }
 
         @Autowired
-        private Bean2 bean2;
+        public void autowire(@Value("${aaaaa:aaaaa}")String value) {
+            log.info(">>>>>>>>>>>>>>>>>> autowired");
+        }
 
+        @PreDestroy
+        public void preDestroy() {
+
+            log.info(">>>>>>>>>>>>>>>>>> preDestroy");
+        }
     }
 
 

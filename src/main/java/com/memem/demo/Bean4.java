@@ -1,4 +1,4 @@
-package com.meme.demo;
+package com.memem.demo;
 
 import org.springframework.stereotype.Component;
 

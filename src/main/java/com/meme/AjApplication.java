@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class AjApplication {
         log.info(context.getEnvironment().getProperty("java_home"));
 
         log.info("{}", springFactories);
+        context.close();
 
     }
 }
