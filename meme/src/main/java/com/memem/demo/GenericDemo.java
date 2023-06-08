@@ -1,9 +1,12 @@
 package com.memem.demo;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 
 @Slf4j
 public class GenericDemo {
@@ -16,7 +19,8 @@ public class GenericDemo {
             if (genericInterface instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) genericInterface;
                 log.info("check type: {}", pt.getRawType().equals(GenericService.class));
-                log.info("check String: {}", pt.getActualTypeArguments()[0].equals(String.class));
+                log.info("check String: {}", pt.getActualTypeArguments()[0].equals(List.class));
+                log.info(new ObjectMapper().readValue("[\"aaaaa\"]", pt.getActualTypeArguments()[0]));
             }
         }
         Type genericSuperclass = clazz.getGenericSuperclass();
@@ -33,11 +37,11 @@ public class GenericDemo {
         R foo(T t);
     }
 
-    public static class AaaaServcice implements GenericService<String, Integer> {
+    public static class AaaaServcice implements GenericService<List<String>, Integer> {
 
         @Override
-        public Integer foo(String s) {
-            return Integer.parseInt(s);
+        public Integer foo(List<String> s) {
+            return 1;
         }
     }
 }
