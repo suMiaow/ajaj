@@ -20,7 +20,6 @@ public class GenericDemo {
                 ParameterizedType pt = (ParameterizedType) genericInterface;
                 log.info("check type: {}", pt.getRawType().equals(GenericService.class));
                 log.info("check String: {}", pt.getActualTypeArguments()[0].equals(List.class));
-                log.info(new ObjectMapper().readValue("[\"aaaaa\"]", pt.getActualTypeArguments()[0]));
             }
         }
         Type genericSuperclass = clazz.getGenericSuperclass();
@@ -44,4 +43,5 @@ public class GenericDemo {
             return 1;
         }
     }
+
 }

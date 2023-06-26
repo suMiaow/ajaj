@@ -1,6 +1,7 @@
 package com.meme.rocketmq.consumer.push;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -8,6 +9,7 @@ import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -24,7 +26,15 @@ public class Consumer {
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-                log.info("{} Receive New Messages: {}", Thread.currentThread().getName(), msgs);
+                if (CollectionUtils.isNotEmpty(msgs)) {
+                    for (MessageExt msg : msgs) {
+                        log.info("-----------------------------------------------------------------------------------");
+                        log.info("msgId: {}", msg.getMsgId());
+                        log.info("body: {}", new String(msg.getBody(), StandardCharsets.UTF_8));
+                        log.info("reconsumeTimes: {}", msg.getReconsumeTimes());
+                        log.info("bornTimestamp: {}", msg.getBornTimestamp());
+                    }
+                }
                 // 返回消息消费状态，ConsumeConcurrentlyStatus.CONSUME_SUCCESS为消费成功
                 return ConsumeConcurrentlyStatus.RECONSUME_LATER;
             }

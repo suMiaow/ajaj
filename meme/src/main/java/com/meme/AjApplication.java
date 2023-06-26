@@ -2,9 +2,8 @@ package com.meme;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -25,7 +24,16 @@ public class AjApplication {
         log.info(context.getEnvironment().getProperty("java_home"));
 
         log.info("{}", springFactories);
+
+        Bean111 bean111 = (Bean111) context.getBean("bean111");
+        bean111.fun();
+
         context.close();
 
+    }
+
+    @Bean
+    public Bean111 bean111() {
+        return new Bean111();
     }
 }

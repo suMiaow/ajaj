@@ -24,8 +24,8 @@ spring:
         jwt:
           issuer-uri: http://localhost:8083/auth/realms/ajaj
           jwk-set-uri: http://localhost:8083/auth/realms/ajaj/protocol/openid-connect/certs
-#rocketmq:
-#  name-server: 127.0.0.1:9876
+rocketmq:
+  name-server: 127.0.0.1:9876
 
 #meme.elasticsearch.host-list: localhost
 

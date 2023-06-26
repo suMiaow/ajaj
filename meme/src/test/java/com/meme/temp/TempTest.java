@@ -1,6 +1,7 @@
 package com.meme.temp;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,8 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -214,10 +217,9 @@ class TempTest {
 
     @Test
     void testFastJson() {
-        String str = "{\"name\":\"aaa\"}";
-        Noob noob = JSON.parseObject(str, Noob.class);
-        log.info(noob.toString());
-        log.info(JSON.toJSONString("aaaaaaaaaa"));
+        JSONArray jsonArray = JSON.parseArray("{\"code\":\"101302301\",\"message\":\"The order information does not exist or the order is invalid\",\"success\":false}");
+        log.info("{}",jsonArray);
+
     }
 
     @Test
@@ -753,18 +755,18 @@ class TempTest {
     @Test
     void testJson() throws JsonProcessingException {
         String jsonStr = "{\n" +
-                "    \"421\": \"string value\",\n" +
-                "    \"533\": [\n" +
-                "      4,\n" +
-                "      5\n" +
-                "    ],\n" +
-                "    \"567\": 123,\n" +
-                "    \"721\": [\n" +
-                "      \"string1\",\n" +
-                "      \"string2\"\n" +
-                "    ],\n" +
-                "    \"854\": null\n" +
-                "  }";
+                         "    \"421\": \"string value\",\n" +
+                         "    \"533\": [\n" +
+                         "      4,\n" +
+                         "      5\n" +
+                         "    ],\n" +
+                         "    \"567\": 123,\n" +
+                         "    \"721\": [\n" +
+                         "      \"string1\",\n" +
+                         "      \"string2\"\n" +
+                         "    ],\n" +
+                         "    \"854\": null\n" +
+                         "  }";
 
         Map<String, Object> map = objectMapper.readValue(jsonStr, new TypeReference<>() {
         });
@@ -813,6 +815,65 @@ class TempTest {
 //        ConnectionFactory connectionFactory = new ConnectionFactory();
 //        connectionFactory.setHost("localhost");
 //        try (connectionFactory.newConnection())
+    }
+
+    @Test
+    void testUnicode() {
+        String address3 = "กรุงเทพมหานคร/ Bangkok";
+        String provinceName = StringUtils.trimToEmpty(address3);
+        if (StringUtils.isNotEmpty(provinceName)
+            && Character.UnicodeScript.THAI.equals(Character.UnicodeScript.of(provinceName.codePointAt(0)))) {
+
+            provinceName = StringUtils.trimToEmpty(StringUtils.substringAfter(provinceName, "/ "));
+        }
+
+        log.info("{}", provinceName);
+    }
+
+    @Test
+    void testUri() {
+
+        log.info(
+        UriComponentsBuilder.fromUriString("https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/1d3ff6be21534a65b216656bd16e4c99~tplv-o3syd03w52-origin-jpeg.jpeg?from=1432613627").queryParam("id", "tos-maliva-i-o3syd03w52-us/1d3ff6be21534a65b216656bd16e4c99").build().toUriString()
+        );
+    }
+
+    @Test
+    void testDate01() {
+
+        // 获取当天的零点时间（UTC+8）
+        LocalDateTime today = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).plusHours(24);
+
+        // 计算前一天的零点时间（UTC+8）
+        LocalDateTime yesterday = today.minusHours(24);
+
+        // 将时间转换为时间戳，单位秒，时区为东八区
+        long startTime = yesterday.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        long endTime = today.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+
+        log.info("startTime: {}", new Date(startTime));
+        log.info("endTime: {}", new Date(endTime));
+
+        ZoneOffset defaultOffset = ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
+        log.info("offset: {}", ZoneOffset.of("+8"));
+        log.info("offset1: {}", defaultOffset);
+        long startTime1 = LocalDate.now().atTime(LocalTime.MIN)
+                .toInstant(defaultOffset).toEpochMilli();
+        long endTime1 = LocalDate.now().atTime(LocalTime.MIN).plusHours(24)
+                .toInstant(defaultOffset).toEpochMilli();
+        log.info("startTime1: {}", new Date(startTime1));
+        log.info("endTime1: {}", new Date(endTime1));
+    }
+
+
+    @Test
+    void testList01() {
+        List<LinkedList<String>> collect = Arrays.asList("aa", "bb", "cc").stream().map(str -> {
+            LinkedList<String> list = new LinkedList<>();
+            list.add(str + "-1");
+            return list;
+        }).collect(Collectors.toList());
+        log.info("{}", collect);
     }
 
 }

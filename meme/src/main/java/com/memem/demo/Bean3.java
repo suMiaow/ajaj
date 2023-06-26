@@ -11,6 +11,6 @@ public class Bean3 {
 
     public String fun() {
 //        return bean4.fun();
-        return null;
+        return "bean3 fun";
     }
 }
