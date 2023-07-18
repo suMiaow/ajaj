@@ -172,13 +172,6 @@
             <version>2.2.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>edu.princeton.cs</groupId>
-            <artifactId>algs4</artifactId>
-            <version>1.0.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/algs4/algs4.jar</systemPath>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
         <dependency>
             <groupId>org.aspectj</groupId>

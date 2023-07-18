@@ -1,6 +1,5 @@
 package com.meme.algs4;
 
-import edu.princeton.cs.algs4.StdOut;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -207,13 +206,13 @@ class AnswerTest_1_1 {
     @Test
     void e19() {
         for (int N = 0; N < 100; N++)
-            StdOut.println(N + " " + F(N));
+            System.out.println(N + " " + F(N));
     }
 
     @Test
     void e19enhanced() {
         for (int N = 0; N < 100; N++)
-            StdOut.println(N + " " + enhancedF(N));
+            System.out.println(N + " " + enhancedF(N));
     }
 
     private long F(int N) {
@@ -256,7 +255,7 @@ class AnswerTest_1_1 {
 
     private void printScore(String name, int dividend, int divisor) {
         double quotient = (double) dividend / divisor;
-        StdOut.printf("%s\t %d\t %d\t %.3f%n", name, dividend, divisor, quotient);
+        System.out.printf("%s\t %d\t %d\t %.3f%n", name, dividend, divisor, quotient);
     }
 
     @Test
@@ -271,9 +270,9 @@ class AnswerTest_1_1 {
 
     private int rank(int key, int[] a, int lo, int hi, int depth) {
         for (int i = 0; i < depth; i++) {
-            StdOut.print("\t");
+            System.out.print("\t");
         }
-        StdOut.printf("lo: %d, hi: %d%n", lo, hi);
+        System.out.printf("lo: %d, hi: %d%n", lo, hi);
         // Index of key in a[], if present, is not smaller than lo and not larger than hi.
         if (lo > hi) return -1;
         int mid = lo + (hi - lo) / 2;
@@ -288,7 +287,7 @@ class AnswerTest_1_1 {
     }
 
     private int gcd(int p, int q) {
-        StdOut.printf("p: %d, q: %d%n", p, q);
+        System.out.printf("p: %d, q: %d%n", p, q);
         if (q == 0) return p;
         int r = p % q;
         return gcd(q, r);
