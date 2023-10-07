@@ -5,18 +5,21 @@ import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.meme.mongo.entity.B2bActivityOrg;
-import com.meme.mongo.entity.Noob;
+import com.meme.pojo.TestCompany;
+import com.meme.pojo.TestUser;
 import com.meme.retry.model.RetryInfo;
 import com.meme.rocketmq.RocketMQUtil;
 import com.meme.util.DateUtils;
 import com.meme.util.FTPUtil;
-import com.rabbitmq.client.ConnectionFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +32,13 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.common.TemplateParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,6 +48,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -218,7 +227,7 @@ class TempTest {
     @Test
     void testFastJson() {
         JSONArray jsonArray = JSON.parseArray("{\"code\":\"101302301\",\"message\":\"The order information does not exist or the order is invalid\",\"success\":false}");
-        log.info("{}",jsonArray);
+        log.info("{}", jsonArray);
 
     }
 
@@ -307,9 +316,11 @@ class TempTest {
     @Test
     void testDecimal() {
 
-        BigDecimal b = new BigDecimal("19.9876");
+        BigDecimal b = new BigDecimal(19980070);
+        BigDecimal divide = b.divide(new BigDecimal(100), 2, RoundingMode.UNNECESSARY);
+        log.info("divide: {}", divide.toPlainString());
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        String format = decimalFormat.format(b);
+        String format = decimalFormat.format(divide);
         log.info("format: {}", format);
     }
 
@@ -330,6 +341,7 @@ class TempTest {
     void random() {
         System.out.println(RandomStringUtils.random(12, "~!@#$%^&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"));
         log.info(UUID.randomUUID().toString());
+        System.out.println(RandomStringUtils.randomAlphanumeric(43));
     }
 
     @Test
@@ -361,13 +373,18 @@ class TempTest {
 
     @Test
     void testMap() {
-        int[] a = {1, 2, 3, 4, 5};
-        int[] b = Arrays.stream(a).map(i -> i * 2).toArray();
-        int[][] a2 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        int[] b2 = Arrays.stream(a2).flatMapToInt(Arrays::stream).toArray();
+        Map<String, List<TestCompany>> map = List.of(
+                TestCompany.builder().code("0").build(),
+                TestCompany.builder().code("0").build(),
+                TestCompany.builder().code("1").build(),
+                TestCompany.builder().code("1").build(),
+                TestCompany.builder().code("1").build(),
+                TestCompany.builder().code("1").build(),
+                TestCompany.builder().build()
+        ).stream().collect(Collectors.groupingBy(TestCompany::getCode));
 
-        System.out.println(Arrays.toString(b));
-        System.out.println(Arrays.toString(b2));
+        System.out.println(map);
+
     }
 
     @Test
@@ -597,15 +614,14 @@ class TempTest {
 
     @Test
     void testDate1() throws JsonProcessingException {
-        Map<String, Date> map = objectMapper.readValue("{\"date\":\"2022-12-09T16:44:56+07:00\"}", new TypeReference<Map<String, Date>>() {
+        Map<String, Date> map = objectMapper.readValue("""
+                {
+                    "date1": "2022-12-09T16:44:56+07:00",
+                    "date2": "1690363015000"
+                }
+                """, new TypeReference<>() {
         });
-        Date date = new Date();
-        long time = date.getTime();
-        System.out.println(time);
         System.out.println(map);
-
-        System.out.println(new Date());
-        System.out.println(DateUtils.getLocalDateTime(new Date()));
     }
 
     @Test
@@ -755,18 +771,18 @@ class TempTest {
     @Test
     void testJson() throws JsonProcessingException {
         String jsonStr = "{\n" +
-                         "    \"421\": \"string value\",\n" +
-                         "    \"533\": [\n" +
-                         "      4,\n" +
-                         "      5\n" +
-                         "    ],\n" +
-                         "    \"567\": 123,\n" +
-                         "    \"721\": [\n" +
-                         "      \"string1\",\n" +
-                         "      \"string2\"\n" +
-                         "    ],\n" +
-                         "    \"854\": null\n" +
-                         "  }";
+                "    \"421\": \"string value\",\n" +
+                "    \"533\": [\n" +
+                "      4,\n" +
+                "      5\n" +
+                "    ],\n" +
+                "    \"567\": 123,\n" +
+                "    \"721\": [\n" +
+                "      \"string1\",\n" +
+                "      \"string2\"\n" +
+                "    ],\n" +
+                "    \"854\": null\n" +
+                "  }";
 
         Map<String, Object> map = objectMapper.readValue(jsonStr, new TypeReference<>() {
         });
@@ -822,7 +838,7 @@ class TempTest {
         String address3 = "กรุงเทพมหานคร/ Bangkok";
         String provinceName = StringUtils.trimToEmpty(address3);
         if (StringUtils.isNotEmpty(provinceName)
-            && Character.UnicodeScript.THAI.equals(Character.UnicodeScript.of(provinceName.codePointAt(0)))) {
+                && Character.UnicodeScript.THAI.equals(Character.UnicodeScript.of(provinceName.codePointAt(0)))) {
 
             provinceName = StringUtils.trimToEmpty(StringUtils.substringAfter(provinceName, "/ "));
         }
@@ -834,7 +850,7 @@ class TempTest {
     void testUri() {
 
         log.info(
-        UriComponentsBuilder.fromUriString("https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/1d3ff6be21534a65b216656bd16e4c99~tplv-o3syd03w52-origin-jpeg.jpeg?from=1432613627").queryParam("id", "tos-maliva-i-o3syd03w52-us/1d3ff6be21534a65b216656bd16e4c99").build().toUriString()
+                UriComponentsBuilder.fromUriString("https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/1d3ff6be21534a65b216656bd16e4c99~tplv-o3syd03w52-origin-jpeg.jpeg?from=1432613627").queryParam("id", "tos-maliva-i-o3syd03w52-us/1d3ff6be21534a65b216656bd16e4c99").build().toUriString()
         );
     }
 
@@ -876,5 +892,224 @@ class TempTest {
         log.info("{}", collect);
     }
 
+    @Test
+    void testCollectionUtils() {
+        List<Integer> list = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<List<Integer>> partition = ListUtils.partition(list, 3);
+        log.info("found: {}", partition.get(1));
+        log.info("found: {}", partition.get(5));
+
+
+    }
+
+    @Test
+    void testCurrency() {
+        System.out.println(
+                Currency.getInstance(Locale.CHINA).getCurrencyCode()
+        );
+        System.out.println(
+                Arrays.toString(Locale.getISOCountries())
+
+        );
+        System.out.println(Locale.SIMPLIFIED_CHINESE.getDisplayCountry());
+        System.out.println(Locale.SIMPLIFIED_CHINESE.getDisplayName(Locale.SIMPLIFIED_CHINESE));
+        System.out.println(Locale.SIMPLIFIED_CHINESE.getDisplayCountry(Locale.SIMPLIFIED_CHINESE));
+        System.out.println(Currency.getInstance(Locale.SIMPLIFIED_CHINESE).getCurrencyCode());
+    }
+
+    @Test
+    void testXml() {
+        String xmlString = "<xml>\n" +
+                "<Encrypt><![CDATA[XuKe5SYaIS0Geo55Yyd+v7J7YPwdGW7nGVLxDZ4HcX/6C1O9aXo3dHt3YjDkCdBr2E3TMlG7E6lw2RhReXZ0pgAsswOYNdVgNivbuiUBiTNnPx04EavcUK3eqwQjn7Qyde7m4mmVmdZj/1I8THELVrHkfOsxRLap9KlxZY6CDwphnYDHvkDNelA1bRt74hYwPqGFTYtwhSZ3N63Tg5O8kVvCH6YpP4A/BfQaD/Yma1PhnfML54+6olBjiRAu8ylBCEsc1N2hsIVqWfGLid8o1Es2zi1wOy447RlSeLWPwwbB8Jgeha2lKP9kajUZ/7aKhOTWVLCPAv5CWY5Bnf1ivcN8vOad+g+RVeHRfL8ZtUlOmKnXhpIsNtReXlKISF2FEnynuPJZieTuCtp0kJxDXjhMs94KxZA2pC26rU8N46QxaSyl+fdveMSJWnpfGxvT8mmsbrryPwr7K57DrzUMdgxN31ZWYI2jOi0YgVcolzBCvJ1T5cdPPe+NJR2yfP8EZV+M4ZWJQCa0zCQWOoTSm5erdTZ5TBa90mdK1MiYF3SrD7ivz/byXueX+YcnDDra2zAvIbf3eCh0ASwgeUZspA+QqDSSnww1Dq9tV428FaNR3UEcNRM2+Eg0YDh5fwWj]]></Encrypt>\n" +
+                "<MsgSignature><![CDATA[7615e72f8ded2f1eae02e3541ab95856cf89858b]]></MsgSignature>\n" +
+                "<TimeStamp>1409304348</TimeStamp>\n" +
+                "<Nonce><![CDATA[xxxxxx]]></Nonce>\n" +
+                "</xml>";
+
+    }
+
+    @Test
+    void testStream() {
+        List<Integer> list = Stream.of(List.of(1, 2, 3, 4), List.of(5, 6, 7, 8))
+                .flatMap(Collection::stream)
+                .toList();
+
+        System.out.println(list);
+
+        Map<Integer, List<Integer>> map1 = new HashMap<>();
+        map1.put(1, null);
+        System.out.println(
+
+                List.of(map1, Map.of(1, List.of(1, 2)), Map.of(1, List.of(3, 2, 2, 4)))
+                        .stream()
+                        .map(map -> (List) map.get(1))
+                        .filter(e -> e != null)
+                        .flatMap(Collection::stream).distinct().collect(Collectors.toList())
+
+        );
+    }
+
+    @Test
+    void testSpel() {
+        SpelExpressionParser parser = new SpelExpressionParser();
+        TemplateParserContext templateParserContext = new TemplateParserContext();
+
+        StandardEnvironment standardEnvironment = new StandardEnvironment();
+        standardEnvironment.setActiveProfiles("dev");
+        Expression expression = parser.parseExpression(standardEnvironment.resolveRequiredPlaceholders("#{${aaaaaaa:{'EC':'Default','ZZ':'EXCESS'}}}"), templateParserContext);
+
+//        Map map = expression.getValue(Map.class);
+        Object value = expression.getValue();
+//        Object value = expression.getValue("");
+        System.out.println(value.getClass());
+        System.out.println(value);
+//        System.out.println(map.keySet());
+//        ConfigurablePropertyResolver
+    }
+
+    @Test
+    void testString1() {
+        String param = "3028345-003-18";
+        String result = null;
+        String[] split = StringUtils.split(param, "-");
+        if (split != null && split.length > 2) {
+            result = split[0] + "-" + split[1];
+        }
+
+        System.out.println(result);
+
+    }
+
+    @Test
+    void testString2() {
+        String value = "#{${ua.inventory.warehouse.mapping:{'EC':'Default','ZZ':'EXCESS'}}}";
+
+        String v1 =
+                StringUtils.substring(value, StringUtils.indexOf(value, "#{") + 2, StringUtils.lastIndexOf(value, "}"));
+        String v2 = StringUtils.substring(v1, StringUtils.indexOf(v1, "${") + 2, StringUtils.lastIndexOf(v1, "}"));
+        System.out.println(v1);
+    }
+
+    @Test
+    void testStrip() {
+        String result = strip("{{aaa}}", "{", "}");
+        System.out.println(result);
+    }
+
+    private String strip(String str, String start, String end) {
+        int startIndex = StringUtils.indexOf(str, start);
+        if (startIndex < 0) {
+            startIndex = 0;
+        } else {
+            startIndex = startIndex + StringUtils.length(start);
+        }
+        int endIndex = StringUtils.lastIndexOf(str, end);
+        if (endIndex < 0) {
+            endIndex = StringUtils.length(str);
+        } else if (endIndex == 0 && "".equals(end)) {
+            endIndex = StringUtils.length(str);
+        }
+        return StringUtils.substring(str, startIndex, endIndex);
+    }
+
+    @Test
+    void testGson() {
+        TestUser<TestCompany> user = new TestUser<>();
+        user.setName("username");
+        TestCompany testCompany = new TestCompany();
+        testCompany.setName("companyname");
+        testCompany.setAaaList(List.of("aaa", "bbb"));
+        user.setData(testCompany);
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        System.out.println(json);
+        Object o1 = gson.fromJson(json, new TypeToken<TestUser<TestCompany>>() {
+        }.getType());
+        System.out.println(o1);
+        TestUser o2 = gson.fromJson(json, TestUser.class);
+        System.out.println(o2);
+
+        String str = "{\"nnnn\":\"companyname\",\"aaa_list\":[\"aaa\",\"bbb\"]}";
+        System.out.println(gson.fromJson(str, TestCompany.class));
+    }
+
+    @Test
+    void testMap1() {
+        HashMap<String, TestCompany> map = new HashMap<>();
+
+        computeMap(map);
+        System.out.println(map);
+        computeMap(map);
+        System.out.println(map);
+
+    }
+
+    private void computeMap(Map<String, TestCompany> map) {
+
+        map.compute("1", (k, v) -> {
+            if (v == null) {
+                v = new TestCompany();
+                v.setName("v1");
+            } else {
+                v.setName("v2");
+            }
+            return v;
+        });
+    }
+
+    @Test
+    void testRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(5000);
+//        HttpClient
+//        clientHttpRequestFactory.setHttpClient();
+//        clientHttpRequestFactory.setReadTimeout(20000);
+//        restTemplate.setRequestFactory(clientHttpRequestFactory);
+//        restTemplate.setRequestFactory();
+    }
+
+    @Test
+    void testGetValue() {
+        Object value = parseText("#{${wls.update-inventory.retry.error-code:{'-1', '45011', 'timeout'}}}");
+        System.out.println(value);
+    }
+
+    private Object parseText(String text) {
+
+        ParserContext parserContext = new TemplateParserContext();
+        StandardEnvironment env = new StandardEnvironment();
+        SpelExpressionParser parser = new SpelExpressionParser();
+        Expression expression = parser.parseExpression(env.resolveRequiredPlaceholders(text), parserContext);
+        return expression.getValue();
+    }
+
+    @Test
+    void testDate5() {
+        String timeStr = "{\"startTime\": \"2023-03-04T00:21:21+07:00\", \"endTime\": \"2023-03-04T00:21:21+07:00\"}";
+        Map<String, Date> map = JSON.parseObject(timeStr, new com.alibaba.fastjson.TypeReference<Map<String, Date>>() {
+        });
+        System.out.println(map);
+        Date successPullTime = new Date();
+        int createTimeSpan = 237500;
+        int timeSpanSec = 86400;
+        Date startDate = getDate(successPullTime, Calendar.SECOND, -createTimeSpan);
+        Date endDate = getDate(startDate, Calendar.SECOND, timeSpanSec);
+
+        System.out.println(startDate);
+        System.out.println(endDate);
+    }
+
+    public Date getDate(Date designate, int type, int interval) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(designate);
+        c.add(type, interval);
+        return c.getTime();
+    }
+
+    @Test
+    void testLong() {
+        System.out.println(Long.MAX_VALUE);
+    }
 }
 

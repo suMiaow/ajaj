@@ -93,13 +93,16 @@ public class AESUtil {
     }
     public static void main(String[] args) throws GeneralSecurityException {
 
-        String key = generateKey();
+//        String key = generateKey();
+        String key = "jVNb9nP0XfEKPIeTvobCdg==";
 
+        System.out.println(key);
         String encrypt = encrypt(key, "12345");
         System.out.println(encrypt);
         System.out.println(decrypt(key, encrypt));
-
-        System.out.println(key);
+        String encrypt1 = encrypt(key, "12345");
+        System.out.println(encrypt1);
+        System.out.println(decrypt(key, encrypt1));
     }
 
 }

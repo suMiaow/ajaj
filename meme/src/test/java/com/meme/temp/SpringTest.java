@@ -1,12 +1,18 @@
 package com.meme.temp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.meme.beans.service.DemoService;
 import com.meme.beans.service.impl.AaaDemoService;
 import com.meme.event.CustomSpringEventPublisher;
+import com.meme.interceptor.MeInterceptorHandler;
+import com.meme.interceptor.model.HandleResult;
 import com.meme.retry.model.RetryInfo;
 import com.meme.retry.service.RetryService;
 import com.meme.util.AjAjTestUtils;
 import com.meme.util.SpringUtil;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,5 +165,26 @@ class SpringTest {
 
     }
 
+    @Autowired
+    private MeInterceptorHandler<String, String> meInterceptorHandler;
+
+    @Test
+    void testInterceptor() throws JsonProcessingException {
+        HandleResult<String> handleResult = meInterceptorHandler.preHandle("010102");
+        log.info("{}", new ObjectMapper().writeValueAsString(handleResult));
+    }
+
+    @Autowired
+    private  ObjectMapper objectMapper;
+
+    @Test
+    void testObjectMapper() throws JsonProcessingException {
+        System.out.println(objectMapper.writeValueAsString(new TestObject()));
+    }
+
+    @Data
+    @JsonSerialize
+    private static class TestObject {
+    }
 
 }
