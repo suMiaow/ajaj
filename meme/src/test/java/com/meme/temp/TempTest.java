@@ -919,12 +919,14 @@ class TempTest {
 
     @Test
     void testXml() {
-        String xmlString = "<xml>\n" +
-                "<Encrypt><![CDATA[XuKe5SYaIS0Geo55Yyd+v7J7YPwdGW7nGVLxDZ4HcX/6C1O9aXo3dHt3YjDkCdBr2E3TMlG7E6lw2RhReXZ0pgAsswOYNdVgNivbuiUBiTNnPx04EavcUK3eqwQjn7Qyde7m4mmVmdZj/1I8THELVrHkfOsxRLap9KlxZY6CDwphnYDHvkDNelA1bRt74hYwPqGFTYtwhSZ3N63Tg5O8kVvCH6YpP4A/BfQaD/Yma1PhnfML54+6olBjiRAu8ylBCEsc1N2hsIVqWfGLid8o1Es2zi1wOy447RlSeLWPwwbB8Jgeha2lKP9kajUZ/7aKhOTWVLCPAv5CWY5Bnf1ivcN8vOad+g+RVeHRfL8ZtUlOmKnXhpIsNtReXlKISF2FEnynuPJZieTuCtp0kJxDXjhMs94KxZA2pC26rU8N46QxaSyl+fdveMSJWnpfGxvT8mmsbrryPwr7K57DrzUMdgxN31ZWYI2jOi0YgVcolzBCvJ1T5cdPPe+NJR2yfP8EZV+M4ZWJQCa0zCQWOoTSm5erdTZ5TBa90mdK1MiYF3SrD7ivz/byXueX+YcnDDra2zAvIbf3eCh0ASwgeUZspA+QqDSSnww1Dq9tV428FaNR3UEcNRM2+Eg0YDh5fwWj]]></Encrypt>\n" +
-                "<MsgSignature><![CDATA[7615e72f8ded2f1eae02e3541ab95856cf89858b]]></MsgSignature>\n" +
-                "<TimeStamp>1409304348</TimeStamp>\n" +
-                "<Nonce><![CDATA[xxxxxx]]></Nonce>\n" +
-                "</xml>";
+        String xmlString = """
+                <xml>
+                <Encrypt><![CDATA[XuKe5SYaIS0Geo55Yyd+v7J7YPwdGW7nGVLxDZ4HcX/6C1O9aXo3dHt3YjDkCdBr2E3TMlG7E6lw2RhReXZ0pgAsswOYNdVgNivbuiUBiTNnPx04EavcUK3eqwQjn7Qyde7m4mmVmdZj/1I8THELVrHkfOsxRLap9KlxZY6CDwphnYDHvkDNelA1bRt74hYwPqGFTYtwhSZ3N63Tg5O8kVvCH6YpP4A/BfQaD/Yma1PhnfML54+6olBjiRAu8ylBCEsc1N2hsIVqWfGLid8o1Es2zi1wOy447RlSeLWPwwbB8Jgeha2lKP9kajUZ/7aKhOTWVLCPAv5CWY5Bnf1ivcN8vOad+g+RVeHRfL8ZtUlOmKnXhpIsNtReXlKISF2FEnynuPJZieTuCtp0kJxDXjhMs94KxZA2pC26rU8N46QxaSyl+fdveMSJWnpfGxvT8mmsbrryPwr7K57DrzUMdgxN31ZWYI2jOi0YgVcolzBCvJ1T5cdPPe+NJR2yfP8EZV+M4ZWJQCa0zCQWOoTSm5erdTZ5TBa90mdK1MiYF3SrD7ivz/byXueX+YcnDDra2zAvIbf3eCh0ASwgeUZspA+QqDSSnww1Dq9tV428FaNR3UEcNRM2+Eg0YDh5fwWj]]></Encrypt>
+                <MsgSignature><![CDATA[7615e72f8ded2f1eae02e3541ab95856cf89858b]]></MsgSignature>
+                <TimeStamp>1409304348</TimeStamp>
+                <Nonce><![CDATA[xxxxxx]]></Nonce>
+                </xml>
+                """;
 
     }
 
@@ -1110,6 +1112,12 @@ class TempTest {
     @Test
     void testLong() {
         System.out.println(Long.MAX_VALUE);
+    }
+
+    @Test
+    void testInteger() {
+        System.out.println(-Integer.MAX_VALUE);
+        System.out.println(Integer.MIN_VALUE);
     }
 }
 
