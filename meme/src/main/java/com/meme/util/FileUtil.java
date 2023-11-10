@@ -12,7 +12,7 @@ public class FileUtil {
 
         Path file = Paths.get(absPath);
         Files.createDirectories(file.getParent());
-        Files.write(file, fileContent.getBytes(StandardCharsets.UTF_8));
+        Files.writeString(file, fileContent);
     }
 
     public static void main(String[] args) {
