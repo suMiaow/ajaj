@@ -23,6 +23,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -340,7 +341,7 @@ class TempTest {
     @Test
     void random() {
         System.out.println(RandomStringUtils.random(12, "~!@#$%^&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"));
-        log.info(UUID.randomUUID().toString());
+        log.info(UUID.randomUUID().toString().replace("-", ""));
         System.out.println(RandomStringUtils.randomAlphanumeric(43));
     }
 
@@ -1118,6 +1119,18 @@ class TempTest {
     void testInteger() {
         System.out.println(-Integer.MAX_VALUE);
         System.out.println(Integer.MIN_VALUE);
+    }
+
+    @Test
+    void testStopWatch() throws InterruptedException {
+        StopWatch stopWatch = StopWatch.createStarted();
+        TimeUnit.SECONDS.sleep(3);
+        System.out.println(stopWatch.getTime());
+        TimeUnit.SECONDS.sleep(4);
+        System.out.println(stopWatch.getTime());
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println(stopWatch.getTime());
+        stopWatch.stop();
     }
 }
 
