@@ -24,8 +24,9 @@ public class DemoController {
         return a;
     }
 
-    @PostMapping("/path/aaa")
-        public Object pathaaa(){
+    @GetMapping("/path/aaa")
+    @CrossOrigin(origins = "http://localhost:7070")
+    public Object pathaaa() {
         log.info("nnnnnnn");
         return "nnnnn";
     }

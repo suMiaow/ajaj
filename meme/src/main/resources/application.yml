@@ -4,7 +4,6 @@ spring:
       host: 127.0.0.1
       port: 6379
       database: 1
-      ssl: false
       timeout:
       password:
       jedis.pool.max-active: 100
@@ -13,25 +12,5 @@ spring:
       jedis.pool.min-idle: 0
   application:
     name: aj
-#    data:
-#    mongodb:
-#      host: 192.168.80.128
-#      port: 27017
-#      database: articledb
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8083/auth/realms/ajaj
-          jwk-set-uri: http://localhost:8083/auth/realms/ajaj/protocol/openid-connect/certs
-rocketmq:
-  name-server: 127.0.0.1:9876
-
-#meme.elasticsearch.host-list: localhost
-
-server:
-  port: 8080
-  servlet:
-    context-path: /resource-server
 
 demo.client.bean:
