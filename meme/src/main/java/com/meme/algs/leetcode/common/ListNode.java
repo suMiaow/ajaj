@@ -28,7 +28,7 @@ public class ListNode {
         System.out.println();
     }
 
-    public static ListNode initNode(int[] list) {
+    public static ListNode initNode(int... list) {
 
         ListNode head = null;
         ListNode curr = null;
