@@ -1,14 +1,14 @@
 package com.meme.algs;
 
-public interface Queue<E> {
+public interface Stack<E> {
 
-    boolean offer(E value);
+    boolean push(E item);
 
-    E poll();
-
+    E pop();
     E peek();
 
     boolean isEmpty();
-
     boolean isFull();
+
+
 }

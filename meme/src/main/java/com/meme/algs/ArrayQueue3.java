@@ -2,33 +2,16 @@ package com.meme.algs;
 
 import java.util.Iterator;
 
-public class LinkedListQueue<E> implements Queue<E>, Iterable<E> {
+public class ArrayQueue3<E> implements Queue<E>, Iterable<E> {
 
-    private class Node {
-        E e;
-        Node next;
+    private final E[] array;
 
-        Node() {
-        }
+    private int head = 0;
+    private int tail = 0;
 
-        Node(E e, Node next) {
-            this.e = e;
-            this.next = next;
-        }
-    }
-
-    private final Node sentinel = new Node();
-    private Node tail = sentinel;
-    private int size = 0;
-    private int capacity;
-
-    public LinkedListQueue(int capacity) {
-        sentinel.next = sentinel;
-        this.capacity = capacity;
-    }
-
-    public LinkedListQueue() {
-       this(Integer.MAX_VALUE);
+    @SuppressWarnings("all")
+    public ArrayQueue3(int capacity) {
+        array = (E[]) new Object[1 << (int) Math.ceil(Math.log(capacity) / Math.log(2))];
     }
 
     @Override
@@ -36,8 +19,9 @@ public class LinkedListQueue<E> implements Queue<E>, Iterable<E> {
         if (isFull()) {
             return false;
         }
-        tail = tail.next = new Node(value, sentinel);
-        size++;
+        array[tail & (array.length - 1)] = value;
+        tail++;
+
         return true;
     }
 
@@ -46,12 +30,9 @@ public class LinkedListQueue<E> implements Queue<E>, Iterable<E> {
         if (isEmpty()) {
             return null;
         }
-        E result = sentinel.next.e;
-        sentinel.next = sentinel.next.next;
-        if (sentinel.next == sentinel) {
-            tail = sentinel;
-        }
-        size--;
+        E result = array[head & (array.length - 1)];
+        head++;
+
         return result;
     }
 
@@ -60,48 +41,41 @@ public class LinkedListQueue<E> implements Queue<E>, Iterable<E> {
         if (isEmpty()) {
             return null;
         }
-        return sentinel.next.e;
+        return array[head & (array.length - 1)];
     }
 
     @Override
     public boolean isEmpty() {
-        return sentinel.next == sentinel;
+        return head == tail;
     }
 
     @Override
     public boolean isFull() {
-        return size >= capacity;
+        return tail - head == array.length;
     }
 
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<>() {
-            Node current = sentinel;
+        return new Iterator<E>() {
+
+            int i = head;
 
             @Override
             public boolean hasNext() {
-                return current.next != sentinel;
+                return i < tail;
             }
 
             @Override
             public E next() {
-                current = current.next;
-                return current.e;
+                return array[i++ & (array.length - 1)];
             }
         };
     }
 
     public static void main(String[] args) {
-        LinkedListQueue<Integer> queue = new LinkedListQueue<>();
-        queue.offer(1);
 
-        print(queue);
-        queue.offer(2);
-        print(queue);
-        System.out.println(queue.peek());
-        System.out.println(queue.poll());
-        System.out.println(queue.poll());
-        System.out.println(queue.poll());
+        ArrayQueue3<Integer> queue = new ArrayQueue3<>(10);
+
         queue.offer(1);
         queue.offer(2);
         queue.offer(3);
@@ -132,13 +106,12 @@ public class LinkedListQueue<E> implements Queue<E>, Iterable<E> {
         System.out.println(queue.isEmpty());
         System.out.println(queue.poll());
         print(queue);
+
     }
 
-    private static <E> void print(LinkedListQueue<E> queue) {
+    private static <E> void print(ArrayQueue3<E> queue) {
 
-        queue.forEach(e -> {
-            System.out.print(e + "\t");
-        });
+        queue.forEach(e -> System.out.print(e + "\t"));
         System.out.println();
     }
 }
