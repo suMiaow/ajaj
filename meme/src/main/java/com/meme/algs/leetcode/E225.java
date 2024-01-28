@@ -1,7 +1,6 @@
 package com.meme.algs.leetcode;
 
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 public class E225 {
 
