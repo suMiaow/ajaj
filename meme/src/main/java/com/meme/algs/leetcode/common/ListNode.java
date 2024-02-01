@@ -1,6 +1,5 @@
 package com.meme.algs.leetcode.common;
 
-import java.util.List;
 
 public class ListNode {
     public int val;
