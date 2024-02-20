@@ -1,7 +1,6 @@
 package com.meme.algs.leetcode;
 
-import com.meme.algs.leetcode.common.TreeNode;
-import org.checkerframework.checker.units.qual.A;
+import com.meme.algs.common.TreeNode;
 
 import java.util.*;
 
