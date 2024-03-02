@@ -27,9 +27,9 @@ public class MaxHeap {
         }
     }
 
-    public static void heapify(int[] array) {
-        for (int i = array.length / 2 - 1; i >= 0; i--) {
-            down(array, array.length, i);
+    public static void heapify(int[] array, int size) {
+        for (int i = size / 2 - 1; i >= 0; i--) {
+            down(array, size, i);
         }
     }
 
@@ -129,7 +129,7 @@ public class MaxHeap {
     }
 
     public static void sort(int[] array) {
-        heapify(array);
+        heapify(array, array.length);
         for (int i = array.length - 1; i > 0; i--) {
             swap(array, 0, i);
             down(array, i, 0);
