@@ -1,7 +1,5 @@
 package com.meme.algs;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,9 +8,10 @@ public class BucketSort {
 
     public static void sort(int[] a, int range) {
 
-        int max = 0;
-        int min = 0;
-        for (int v : a) {
+        int max = a[0];
+        int min = a[0];
+        for (int i = 1; i < a.length; i++) {
+            int v = a[i];
             if (v > max) {
                 max = v;
             }
