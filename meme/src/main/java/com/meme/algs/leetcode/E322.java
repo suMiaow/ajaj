@@ -1,6 +1,7 @@
 package com.meme.algs.leetcode;
 
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -10,9 +11,22 @@ public class E322 {
 
     public static int coinChange(int[] coins, int amount) {
 
-        rec(coins.length - 1, coins, amount, new AtomicInteger(), new LinkedList<>());
+        if (coins.length < 1 && amount <= 0) {
+            return 0;
+        }
 
-        return min;
+        int[] dp = new int[amount + 1];
+
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+
+        for (int coin : coins) {
+            for (int j = coin; j <= amount; j++) {
+                dp[j] = Math.min(dp[j], 1 + dp[j - coin]);
+            }
+        }
+
+        return dp[amount] > amount ? -1 : dp[amount];
     }
 
     private static void rec(int index, int[] coins, int remainder, AtomicInteger count, LinkedList<Integer> stack) {
@@ -59,7 +73,7 @@ public class E322 {
     }
 
     public static void main(String[] args) {
-        int result = coinChangeGreedy(new int[]{5, 2, 1}, 3);
+        int result = coinChange(new int[]{2, 5, 10, 1}, 27);
         System.out.println(result);
     }
 }

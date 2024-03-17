@@ -5,7 +5,14 @@ import java.util.LinkedList;
 public class E518 {
 
     public static int change(int amount, int[] coins) {
-        return rec(coins.length - 1, coins, amount, new LinkedList<>());
+        int[] dp = new int[amount + 1];
+        dp[0] = 1;
+        for (int coin : coins) {
+            for (int i = coin; i <= amount; i++) {
+                dp[i] += dp[i - coin];
+            }
+        }
+        return dp[amount];
     }
 
     private static int rec(int index, int[] coins, int remainder, LinkedList<Integer> stack) {
