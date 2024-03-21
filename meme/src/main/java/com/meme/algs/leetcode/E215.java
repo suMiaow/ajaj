@@ -1,6 +1,7 @@
 package com.meme.algs.leetcode;
 
 import com.meme.algs.MinHeap;
+import com.meme.algs.divideandconquer.QuickSelect;
 
 public class E215 {
 
@@ -18,7 +19,12 @@ public class E215 {
         return minHeap.peek();
     }
 
-    public static void main(String[] args) {
+    public static int findKthLargest1(int[] nums, int k) {
+        return QuickSelect.quick(nums, 0, nums.length, nums.length - k);
+    }
 
+
+    public static void main(String[] args) {
+        findKthLargest1(new int[] {99, 99}, 1);
     }
 }
