@@ -23,7 +23,6 @@ public class CompositePatternDemo {
         headMarketing.addSubordinate(clerk1);
         headMarketing.addSubordinate(clerk2);
 
-        //打印该组织的所有员工
         System.out.println(ceo);
         for (Employee headEmployee : ceo.getSubordinates()) {
             System.out.println(headEmployee);
